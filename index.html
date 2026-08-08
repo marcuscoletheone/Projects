@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family:Arial; text-align:center; padding:20px;">
+  <h2>Dice Roller</h2>
+  <button onclick="roll()" style="padding:10px 20px; font-size:1.2rem;">
+    Roll 🎲
+  </button>
+  <p id="result" style="font-size:2rem; margin-top:20px;"></p>
+
+  <script>
+    function roll() {
+      document.getElementById("result").innerText =
+        Math.floor(Math.random() * 6) + 1;
+    }
+  </script>
+</body>
+</html>
