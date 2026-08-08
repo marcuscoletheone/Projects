@@ -1,16 +1,55 @@
 <!DOCTYPE html>
 <html>
-<body style="font-family:Arial; text-align:center; padding:20px;">
-  <h2>Dice Roller</h2>
-  <button onclick="roll()" style="padding:10px 20px; font-size:1.2rem;">
-    Roll 🎲
-  </button>
-  <p id="result" style="font-size:2rem; margin-top:20px;"></p>
+<head>
+  <title>Custom 7‑Dice Roller</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .die {
+      background: white;
+      padding: 10px;
+      margin: 10px auto;
+      width: 250px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+    button {
+      padding: 12px 25px;
+      font-size: 1.2rem;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Custom 7‑Dice Roller</h1>
+  <button onclick="rollAll()">Roll All Dice 🎲</button>
+
+  <div id="results"></div>
 
   <script>
-    function roll() {
-      document.getElementById("result").innerText =
-        Math.floor(Math.random() * 6) + 1;
+    const dice = [
+      { name: "Die 1", faces: ["F2", "A5", "F2", "A5", "E1", "B6"] },
+      { name: "Die 2", faces: ["F6", "A4", "D6", "C5", "C6", "B5"] },
+      { name: "Die 3", faces: ["B2", "B1", "A3", "A2", "C2", "B3"] },
+      { name: "Die 4", faces: ["D4", "B4", "E3", "C4", "C3", "D3"] },
+      { name: "Die 5", faces: ["E6", "E5", "E4", "D5", "F5", "F4"] },
+      { name: "Die 6", faces: ["C1", "A1", "D2", "D1", "F3", "E2"] },
+      { name: "Die 7", faces: ["F1", "A6", "F1", "A6", "F1", "A6"] }
+    ];
+
+    function rollAll() {
+      let html = "";
+      dice.forEach(die => {
+        const value = die.faces[Math.floor(Math.random() * die.faces.length)];
+        html += `<div class="die"><strong>${die.name}:</strong> ${value}</div>`;
+      });
+      document.getElementById("results").innerHTML = html;
     }
   </script>
 </body>
