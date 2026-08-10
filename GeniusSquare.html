@@ -351,8 +351,10 @@ function getPieceBoardCoords(piece) {
   const rect = piece.getBoundingClientRect();
   const boardRect = document.getElementById("board").getBoundingClientRect();
 
-  const anchorCol = Math.round((rect.left - boardRect.left) / 60);
-  const anchorRow = Math.round((rect.top - boardRect.top) / 60);
+  const padding = 20; // board padding
+
+  const anchorCol = Math.round((rect.left - boardRect.left - padding) / 60);
+  const anchorRow = Math.round((rect.top - boardRect.top - padding) / 60);
 
   const shape = shapes[piece.dataset.shape];
   const rot = parseInt(piece.dataset.rotation);
