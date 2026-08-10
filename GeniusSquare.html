@@ -124,7 +124,8 @@
   <div id="debugPanel"></div>
 
   <div id="board"></div>
-  
+  <div id="winMessage" style="margin-top:10px; font-size:20px; font-weight:bold;"></div>
+
 <div id="toolbox"></div>
   <script>
     const shapes = {
@@ -375,10 +376,11 @@ function isValidPlacement(coords) {
     function rollAll() {
       resetPiecesToToolbox();
       clearHighlights();
+      document.getElementById("winMessage").textContent = "";
       document.querySelectorAll(".barrier").forEach(cell => {
   cell.classList.remove("barrier", "highlight");
 });
-
+updateDebugPanel();
       let html = "";
       dice.forEach(die => {
         const value = die.faces[Math.floor(Math.random() * die.faces.length)];
@@ -429,7 +431,7 @@ function isValidPlacement(coords) {
     }
   }
 
-  alert("🎉 You solved it!");
+  document.getElementById("winMessage").textContent = "🎉 You solved it!";
   return true;
 }
     function updateDebugPanel() {
