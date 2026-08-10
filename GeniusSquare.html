@@ -380,7 +380,7 @@ function isValidPlacement(coords) {
       document.querySelectorAll(".barrier").forEach(cell => {
   cell.classList.remove("barrier", "highlight");
 });
-updateDebugPanel();
+
       let html = "";
       dice.forEach(die => {
         const value = die.faces[Math.floor(Math.random() * die.faces.length)];
@@ -391,6 +391,7 @@ updateDebugPanel();
       });
 
       document.getElementById("results").innerHTML = html;
+      updateDebugPanel();
     }
 
   function checkWinCondition() {
