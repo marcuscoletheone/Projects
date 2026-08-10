@@ -156,22 +156,22 @@
     ],
     colors: ["#FFA500"] // orange
   },
- threeL: {
+threeL: {
   rotations: [
-    // Rotation 0
-    [[0,0],[1,0],[1,1]],
+    // Hole: top-left
+    [[1,0],[0,1],[1,1]],
 
-    // Rotation 1
-    [[0,0],[0,1],[0,2],[1,0]],
-
-    // Rotation 2
+    // Hole: top-right
     [[0,0],[0,1],[1,1]],
 
-    // Rotation 3 (the missing one)
-    [[0,2],[1,0],[1,1],[1,2]]
+    // Hole: bottom-right
+    [[0,0],[1,0],[0,1]],
+
+    // Hole: bottom-left
+    [[0,0],[1,0],[1,1]]
   ],
-    colors: ["#9b5de5"] // purple
-  },
+  colors: ["#9b5de5"] // purple
+},
   fourLine: {
     rotations: [
       [[0,0],[0,1],[0,2],[0,3]],
