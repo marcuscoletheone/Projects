@@ -86,20 +86,21 @@
     font-size: 0.9rem;
     display: inline-block;
   }
-  #toolbox {
+ #toolbox {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 14px;
   margin: 25px auto;
-  max-width: 420px; /* forces two rows on most phones */
+  max-width: 420px;
 }
 
 .piece {
-  display: inline-flex;
+  position: absolute;
+  display: flex;
   flex-wrap: wrap;
-  position: relative;
   cursor: grab;
+  touch-action: none;
 }
 
 .block {
@@ -108,9 +109,20 @@
   border-radius: 8px;
   box-shadow:
     inset 0 4px 6px rgba(255,255,255,0.6),
-    inset 0 -4px 6px rgba(0,0,0,0.2),
+    inset 0 -4px 6px rgba(0,0,0,0.25),
     0 4px 8px rgba(0,0,0,0.25);
 }
+
+.preview-valid {
+  outline: 3px solid rgba(0, 120, 255, 0.7);
+  outline-offset: -3px;
+}
+
+.preview-invalid {
+  outline: 3px solid rgba(255, 60, 60, 0.8);
+  outline-offset: -3px;
+}
+
   </style>
 </head>
 
@@ -119,16 +131,79 @@
   <button onclick="rollAll()">Roll All Dice 🎲</button>
 
   <div id="results"></div>
-<div id="toolbox">
-  <div class="piece" id="piece-line3">
-    <div class="block" style="background:#ff6b6b;"></div>
-    <div class="block" style="background:#ffd93d;"></div>
-    <div class="block" style="background:#6bcB77;"></div>
-  </div>
+
 </div>
   <div id="grid"></div>
-
+  
+<div id="toolbox"></div>
   <script>
+    const shapes = {
+  one: {
+    rotations: [[[0,0]]],
+    colors: ["#ff6b6b"]
+  },
+  twoLine: {
+    rotations: [
+      [[0,0],[0,1]],
+      [[0,0],[1,0]]
+    ],
+    colors: ["#ff6b6b","#ffd93d"]
+  },
+  threeLine: {
+    rotations: [
+      [[0,0],[0,1],[0,2]],
+      [[0,0],[1,0],[2,0]]
+    ],
+    colors: ["#ff6b6b","#ffd93d","#6bcb77"]
+  },
+  threeL: {
+    rotations: [
+      [[0,0],[1,0],[1,1]],
+      [[0,1],[0,0],[1,0]],
+      [[0,0],[0,1],[1,1]],
+      [[1,0],[0,0],[0,1]]
+    ],
+    colors: ["#ff6b6b","#ffd93d","#6bcb77"]
+  },
+  fourLine: {
+    rotations: [
+      [[0,0],[0,1],[0,2],[0,3]],
+      [[0,0],[1,0],[2,0],[3,0]]
+    ],
+    colors: ["#ff6b6b","#ffd93d","#6bcb77","#4d96ff"]
+  },
+  square4: {
+    rotations: [
+      [[0,0],[0,1],[1,0],[1,1]]
+    ],
+    colors: ["#ff6b6b","#ffd93d","#6bcb77","#4d96ff"]
+  },
+  fourL: {
+    rotations: [
+      [[0,0],[1,0],[2,0],[2,1]],
+      [[0,1],[0,0],[0,2],[1,0]],
+      [[0,0],[0,1],[1,1],[2,1]],
+      [[1,0],[1,1],[1,2],[0,2]]
+    ],
+    colors: ["#ff6b6b","#ffd93d","#6bcb77","#4d96ff"]
+  },
+  fourT: {
+    rotations: [
+      [[0,0],[0,1],[0,2],[1,1]],
+      [[0,1],[1,1],[2,1],[1,0]],
+      [[1,0],[1,1],[1,2],[0,1]],
+      [[0,0],[1,0],[2,0],[1,1]]
+    ],
+    colors: ["#ff6b6b","#ffd93d","#6bcb77","#4d96ff"]
+  },
+  fourZ: {
+    rotations: [
+      [[0,0],[0,1],[1,1],[1,2]],
+      [[0,1],[1,1],[1,0],[2,0]]
+    ],
+    colors: ["#ff6b6b","#ffd93d","#6bcb77","#4d96ff"]
+  }
+};
     const dice = [
       { name: "Die 1", faces: ["F2", "A5", "F2", "A5", "E1", "B6"] },
       { name: "Die 2", faces: ["F6", "A4", "D6", "C5", "C6", "B5"] },
@@ -155,6 +230,142 @@
         }
       }
     }
+    function showPreview(piece, anchorRow, anchorCol, shapeCoords) {
+  clearPreview();
+
+  shapeCoords.forEach(([r, c]) => {
+    const row = anchorRow + r;
+    const col = anchorCol + c;
+
+    const cell = document.getElementById(`${String.fromCharCode(65 + row)}${col + 1}`);
+    if (!cell) return;
+
+    if (cell.classList.contains("barrier")) {
+      cell.classList.add("preview-invalid");
+    } else {
+      cell.classList.add("preview-valid");
+    }
+  });
+}
+function createToolbox() {
+  const toolbox = document.getElementById("toolbox");
+  let offsetX = 0, offsetY = 0;
+
+  Object.entries(shapes).forEach(([name, shape]) => {
+    const piece = document.createElement("div");
+    piece.classList.add("piece");
+    piece.dataset.shape = name;
+    piece.dataset.rotation = 0;
+
+    shape.rotations[0].forEach((coord, i) => {
+      const block = document.createElement("div");
+      block.classList.add("block");
+      block.style.background = shape.colors[i];
+      block.style.left = coord[1] * 60 + "px";
+      block.style.top = coord[0] * 60 + "px";
+      block.style.position = "absolute";
+      piece.appendChild(block);
+    });
+
+    piece.style.left = offsetX + "px";
+    piece.style.top = offsetY + "px";
+
+    offsetX += 140;
+    if (offsetX > 300) {
+      offsetX = 0;
+      offsetY += 140;
+    }
+
+    toolbox.appendChild(piece);
+    enablePieceInteraction(piece);
+  });
+}
+
+createToolbox();
+    function enablePieceInteraction(piece) {
+  let startX, startY;
+  let lastValid = { x: piece.offsetLeft, y: piece.offsetTop };
+
+  piece.addEventListener("pointerdown", e => {
+    startX = e.clientX - piece.offsetLeft;
+    startY = e.clientY - piece.offsetTop;
+    piece.setPointerCapture(e.pointerId);
+
+    piece.onpointermove = ev => {
+      const x = ev.clientX - startX;
+      const y = ev.clientY - startY;
+      piece.style.left = x + "px";
+      piece.style.top = y + "px";
+
+      const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
+      showPreview(piece, anchorRow, anchorCol, coords);
+    };
+
+    piece.onpointerup = ev => {
+      piece.releasePointerCapture(ev.pointerId);
+      piece.onpointermove = null;
+
+      const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
+
+      if (isValidPlacement(coords)) {
+        lastValid.x = piece.offsetLeft;
+        lastValid.y = piece.offsetTop;
+      } else {
+        piece.style.left = lastValid.x + "px";
+        piece.style.top = lastValid.y + "px";
+      }
+
+      clearPreview();
+    };
+  });
+
+  piece.addEventListener("click", () => {
+    rotatePiece(piece);
+  });
+}
+
+function rotatePiece(piece) {
+  const shape = shapes[piece.dataset.shape];
+  let rot = parseInt(piece.dataset.rotation);
+  rot = (rot + 1) % shape.rotations.length;
+  piece.dataset.rotation = rot;
+
+  [...piece.children].forEach((block, i) => {
+    const [r, c] = shape.rotations[rot][i];
+    block.style.left = c * 60 + "px";
+    block.style.top = r * 60 + "px";
+  });
+}
+
+function getPieceBoardCoords(piece) {
+  const rect = piece.getBoundingClientRect();
+  const boardRect = document.getElementById("board").getBoundingClientRect();
+
+  const anchorCol = Math.round((rect.left - boardRect.left) / 60);
+  const anchorRow = Math.round((rect.top - boardRect.top) / 60);
+
+  const shape = shapes[piece.dataset.shape];
+  const rot = parseInt(piece.dataset.rotation);
+
+  return {
+    anchorRow,
+    anchorCol,
+    coords: shape.rotations[rot].map(([r, c]) => [anchorRow + r, anchorCol + c])
+  };
+}
+
+function isValidPlacement(coords) {
+  for (const [r, c] of coords) {
+    if (r < 0 || r > 5 || c < 0 || c > 5) return false;
+    const cell = document.getElementById(`${String.fromCharCode(65+r)}${c+1}`);
+    if (cell.classList.contains("barrier")) return false;
+  }
+  return true;
+}
+function clearPreview() {
+  document.querySelectorAll(".preview-valid, .preview-invalid")
+    .forEach(cell => cell.classList.remove("preview-valid", "preview-invalid"));
+}
 
     function clearHighlights() {
       document.querySelectorAll(".cell").forEach(cell => {
