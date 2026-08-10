@@ -411,9 +411,10 @@ function clearPreview() {
       document.getElementById("results").innerHTML = html;
     }
 
-    function checkWinCondition() {
+  function checkWinCondition() {
   const boardRect = document.getElementById("board").getBoundingClientRect();
   const pieces = document.querySelectorAll(".piece");
+  const padding = 20; // IMPORTANT FIX
 
   // Track coverage
   const covered = new Set();
@@ -423,8 +424,8 @@ function clearPreview() {
     const rot = parseInt(piece.dataset.rotation);
 
     const rect = piece.getBoundingClientRect();
-    const anchorCol = Math.round((rect.left - boardRect.left) / 60);
-    const anchorRow = Math.round((rect.top - boardRect.top) / 60);
+    const anchorCol = Math.round((rect.left - boardRect.left - padding) / 60);
+    const anchorRow = Math.round((rect.top - boardRect.top - padding) / 60);
 
     shape.rotations[rot].forEach(([r, c]) => {
       const row = anchorRow + r;
