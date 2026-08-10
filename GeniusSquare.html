@@ -296,7 +296,6 @@ function createToolbox() {
 createToolbox();
 function enablePieceInteraction(piece) {
   let startX, startY;
-  let lastValid = { x: piece.offsetLeft, y: piece.offsetTop };
   let dragging = false;
 
   piece.addEventListener("pointerdown", e => {
@@ -306,34 +305,22 @@ function enablePieceInteraction(piece) {
     piece.setPointerCapture(e.pointerId);
 
     piece.onpointermove = ev => {
-      const x = ev.clientX - startX;
-      const y = ev.clientY - startY;
+  const x = ev.clientX - startX;
+  const y = ev.clientY - startY;
+  piece.style.left = x + "px";
+  piece.style.top = y + "px";
 
-      // If movement is significant, mark as dragging
-      if (Math.abs(ev.clientX - e.clientX) > 3 || Math.abs(ev.clientY - e.clientY) > 3) {
-        dragging = true;
-      }
+  const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
+  showPreview(piece, anchorRow, anchorCol, coords);
 
-      piece.style.left = x + "px";
-      piece.style.top = y + "px";
-
-      const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
-      showPreview(piece, anchorRow, anchorCol, coords);
-    };
+  checkWinCondition(); // NEW
+};
 
     piece.onpointerup = ev => {
       piece.releasePointerCapture(ev.pointerId);
       piece.onpointermove = null;
 
       const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
-
-      if (isValidPlacement(coords)) {
-        lastValid.x = piece.offsetLeft;
-        lastValid.y = piece.offsetTop;
-      } else {
-        piece.style.left = lastValid.x + "px";
-        piece.style.top = lastValid.y + "px";
-      }
 
       clearPreview();
     };
@@ -343,6 +330,7 @@ function enablePieceInteraction(piece) {
     if (!dragging) {
       rotatePiece(piece); // rotate ONLY if not dragging
     }
+    checkWinCondition(); // NEW
   });
 }
 
@@ -409,6 +397,47 @@ function clearPreview() {
 
       document.getElementById("results").innerHTML = html;
     }
+
+    function checkWinCondition() {
+  const boardRect = document.getElementById("board").getBoundingClientRect();
+  const pieces = document.querySelectorAll(".piece");
+
+  // Track coverage
+  const covered = new Set();
+
+  pieces.forEach(piece => {
+    const shape = shapes[piece.dataset.shape];
+    const rot = parseInt(piece.dataset.rotation);
+
+    const rect = piece.getBoundingClientRect();
+    const anchorCol = Math.round((rect.left - boardRect.left) / 60);
+    const anchorRow = Math.round((rect.top - boardRect.top) / 60);
+
+    shape.rotations[rot].forEach(([r, c]) => {
+      const row = anchorRow + r;
+      const col = anchorCol + c;
+
+      if (row >= 0 && row < 6 && col >= 0 && col < 6) {
+        covered.add(`${row},${col}`);
+      }
+    });
+  });
+
+  // Check all non-barrier squares
+  for (let r = 0; r < 6; r++) {
+    for (let c = 0; c < 6; c++) {
+      const cell = document.getElementById(`${String.fromCharCode(65+r)}${c+1}`);
+      if (!cell.classList.contains("barrier")) {
+        if (!covered.has(`${r},${c}`)) {
+          return false; // not yet solved
+        }
+      }
+    }
+  }
+
+  alert("🎉 You solved it!");
+  return true;
+}
 
     buildBoard();
   </script>
