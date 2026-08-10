@@ -113,23 +113,12 @@
     inset 0 -4px 6px rgba(0,0,0,0.25),
     0 4px 8px rgba(0,0,0,0.25);
 }
-
-.preview-valid {
-  outline: 3px solid rgba(0, 120, 255, 0.7);
-  outline-offset: -3px;
-}
-
-.preview-invalid {
-  outline: 3px solid rgba(255, 60, 60, 0.8);
-  outline-offset: -3px;
-}
-
   </style>
 </head>
 
 <body>
   <h1>Custom 7‑Dice Roller</h1>
-  <button onclick="rollAll()">Roll All Dice 🎲</button>
+  <button onclick="rollAll()">Start Game (Set new Barriers)🎲</button>
 
   <div id="results"></div>
   <div id="debugPanel"></div>
@@ -250,21 +239,14 @@ threeL: {
         }
       }
     }
-    function showPreview(piece, anchorRow, anchorCol, shapeCoords) {
-  clearPreview();
+function resetPiecesToToolbox() {
+  const toolbox = document.getElementById("toolbox");
+  const pieces = document.querySelectorAll(".piece");
 
-  shapeCoords.forEach(([r, c]) => {
-    const row = anchorRow + r;
-    const col = anchorCol + c;
-
-    const cell = document.getElementById(`${String.fromCharCode(65 + row)}${col + 1}`);
-    if (!cell) return;
-
-    if (cell.classList.contains("barrier")) {
-      cell.classList.add("preview-invalid");
-    } else {
-      cell.classList.add("preview-valid");
-    }
+  pieces.forEach(piece => {
+    piece.style.left = "";
+    piece.style.top = "";
+    toolbox.appendChild(piece);
   });
 }
 function createToolbox() {
@@ -319,7 +301,6 @@ function enablePieceInteraction(piece) {
   piece.style.top = y + "px";
 
   const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
-  showPreview(piece, anchorRow, anchorCol, coords);
 
   updateDebugPanel();    
   checkWinCondition(); // NEW
@@ -332,7 +313,6 @@ function enablePieceInteraction(piece) {
 
       const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
 
-      clearPreview();
     };
   });
 
@@ -385,10 +365,6 @@ function isValidPlacement(coords) {
   }
   return true;
 }
-function clearPreview() {
-  document.querySelectorAll(".preview-valid, .preview-invalid")
-    .forEach(cell => cell.classList.remove("preview-valid", "preview-invalid"));
-}
 
     function clearHighlights() {
       document.querySelectorAll(".cell").forEach(cell => {
@@ -397,7 +373,11 @@ function clearPreview() {
     }
 
     function rollAll() {
+      resetPiecesToToolbox();
       clearHighlights();
+      document.querySelectorAll(".barrier").forEach(cell => {
+  cell.classList.remove("barrier", "highlight");
+});
 
       let html = "";
       dice.forEach(die => {
