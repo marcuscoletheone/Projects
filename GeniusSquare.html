@@ -294,11 +294,13 @@ function createToolbox() {
 }
 
 createToolbox();
-    function enablePieceInteraction(piece) {
+function enablePieceInteraction(piece) {
   let startX, startY;
   let lastValid = { x: piece.offsetLeft, y: piece.offsetTop };
+  let dragging = false;
 
   piece.addEventListener("pointerdown", e => {
+    dragging = false; // reset
     startX = e.clientX - piece.offsetLeft;
     startY = e.clientY - piece.offsetTop;
     piece.setPointerCapture(e.pointerId);
@@ -306,6 +308,12 @@ createToolbox();
     piece.onpointermove = ev => {
       const x = ev.clientX - startX;
       const y = ev.clientY - startY;
+
+      // If movement is significant, mark as dragging
+      if (Math.abs(ev.clientX - e.clientX) > 3 || Math.abs(ev.clientY - e.clientY) > 3) {
+        dragging = true;
+      }
+
       piece.style.left = x + "px";
       piece.style.top = y + "px";
 
@@ -332,7 +340,9 @@ createToolbox();
   });
 
   piece.addEventListener("click", () => {
-    rotatePiece(piece);
+    if (!dragging) {
+      rotatePiece(piece); // rotate ONLY if not dragging
+    }
   });
 }
 
