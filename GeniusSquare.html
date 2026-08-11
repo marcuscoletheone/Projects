@@ -87,14 +87,21 @@
     display: inline-block;
   }
 
- #toolbox {
-  position: relative;
-  width: 420px;      /* match your image width */
-  height: 200px;     /* adjust to fit your pieces */
+#toolbox {
+  display: grid;
+  grid-template-columns: repeat(5, 60px);
+  grid-template-rows: repeat(6, 60px);
+  gap: 6px;
+
   margin: 25px auto;
-  padding: 10px;
+  width: max-content;
+
   background: #f4f4f4;
-  border-radius: 8px;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow:
+    0 4px 8px rgba(0,0,0,0.15),
+    inset 0 0 10px rgba(0,0,0,0.05);
 }
 
 .piece {
@@ -129,18 +136,23 @@
 
 <div id="toolbox"></div>
   <script>
-const startingPositions = [
-  { left: 10,  top: 10 },   // purple
-  { left: 90,  top: 10 },   // black
-  { left: 170, top: 10 },   // orange
-  { left: 250, top: 10 },   // brown
-  { left: 330, top: 10 },   // blue
+const startingPositions = {
+  // Row 1 — long & simple shapes
+  one:        { row: 1, col: 1, rotation: 0 }, // single block
+  twoLine:    { row: 1, col: 2, rotation: 0 }, // horizontal
+  threeLine:  { row: 1, col: 3, rotation: 0 }, // horizontal
+  fourLine:   { row: 1, col: 4, rotation: 0 }, // horizontal
+  square4:    { row: 1, col: 5, rotation: 0 }, // 2×2 block
 
-  { left: 10,  top: 90 },   // red
-  { left: 90,  top: 90 },   // yellow
-  { left: 170, top: 90 },   // green
-  { left: 250, top: 90 },   // etc...
-];
+  // Row 2 — medium complexity shapes
+  threeL:     { row: 2, col: 1, rotation: 0 }, // 3‑block L
+  fourL:      { row: 2, col: 2, rotation: 0 }, // 4‑block L
+  fourT:      { row: 2, col: 3, rotation: 0 }, // T shape
+  fourZ:      { row: 2, col: 4, rotation: 0 }, // Z/S shape
+
+  // Row 3 — optional extra space for future shapes
+  // (kept empty intentionally)
+};
     const shapes = {
   one: {
     rotations: [[[0,0]]],
@@ -253,17 +265,27 @@ threeL: {
         }
       }
     }
+    function placePieceInToolbox(piece, pos) {
+  const size = 60; // same as board cell size
+  const gap = 6;
+
+  const left = (pos.col - 1) * (size + gap);
+  const top  = (pos.row - 1) * (size + gap);
+
+  piece.style.left = left + "px";
+  piece.style.top  = top + "px";
+
+  piece.dataset.rotation = pos.rotation;
+  piece.style.transform = `rotate(${pos.rotation * 90}deg)`;
+}
 function resetPiecesToToolbox() {
   const toolbox = document.getElementById("toolbox");
-  const pieces = document.querySelectorAll(".piece");
 
-  pieces.forEach((piece, index) => {
-    piece.dataset.rotation = 0;
-    piece.style.transform = "";
+  document.querySelectorAll(".piece").forEach(piece => {
+    const shapeName = piece.dataset.shape;
+    const pos = startingPositions[shapeName];
 
-    piece.style.left = startingPositions[index].left + "px";
-    piece.style.top  = startingPositions[index].top  + "px";
-
+    placePieceInToolbox(piece, pos);
     toolbox.appendChild(piece);
   });
 }
