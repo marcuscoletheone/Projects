@@ -117,14 +117,14 @@
 </head>
 
 <body>
-  <h1>Custom 7‑Dice Roller</h1>
+  <h1>Square Puzzle</h1>
   <button onclick="rollAll()">Start Game (Set new Barriers)🎲</button>
 
   <div id="results"></div>
   <div id="debugPanel"></div>
 
   <div id="board"></div>
-  <div id="winMessage" style="margin-top:10px; font-size:20px; font-weight:bold;"></div>
+  <div id="winMessage" style="margin-top:10px; font-size:20px; font-weight:bold;">Fill all squares to win.</div>
 
 <div id="toolbox"></div>
   <script>
@@ -241,14 +241,12 @@ threeL: {
       }
     }
 function resetPiecesToToolbox() {
-  const toolbox = document.getElementById("toolbox");
   const pieces = document.querySelectorAll(".piece");
 
   pieces.forEach(piece => {
-    piece.style.left = "";
-    piece.style.top = "";
-    toolbox.appendChild(piece);
+   piece.remove();
   });
+  createToolbox()
 }
 function createToolbox() {
   const toolbox = document.getElementById("toolbox");
