@@ -86,7 +86,6 @@
     font-size: 0.9rem;
     display: inline-block;
   }
-
 #toolbox {
   display: grid;
   grid-template-columns: repeat(5, 60px);
@@ -95,17 +94,13 @@
 
   margin: 25px auto;
   width: max-content;
-
   background: #f4f4f4;
   padding: 20px;
   border-radius: 15px;
-  box-shadow:
-    0 4px 8px rgba(0,0,0,0.15),
-    inset 0 0 10px rgba(0,0,0,0.05);
 }
 
 .piece {
-  position: absolute;
+  position: relative; 
   display: flex;
   flex-wrap: wrap;
   cursor: grab;
@@ -265,19 +260,15 @@ threeL: {
         }
       }
     }
-    function placePieceInToolbox(piece, pos) {
-  const size = 60; // same as board cell size
-  const gap = 6;
 
-  const left = (pos.col - 1) * (size + gap);
-  const top  = (pos.row - 1) * (size + gap);
-
-  piece.style.left = left + "px";
-  piece.style.top  = top + "px";
+ function placePieceInToolbox(piece, pos) {
+  piece.style.gridRow = pos.row;
+  piece.style.gridColumn = pos.col;
 
   piece.dataset.rotation = pos.rotation;
   piece.style.transform = `rotate(${pos.rotation * 90}deg)`;
 }
+
 function resetPiecesToToolbox() {
   const toolbox = document.getElementById("toolbox");
 
@@ -288,10 +279,9 @@ function resetPiecesToToolbox() {
     placePieceInToolbox(piece, pos);
     toolbox.appendChild(piece);
   });
-}
+
 function createToolbox() {
   const toolbox = document.getElementById("toolbox");
-  let offsetX = 0, offsetY = 0;
 
   Object.entries(shapes).forEach(([name, shape]) => {
     const piece = document.createElement("div");
@@ -299,24 +289,18 @@ function createToolbox() {
     piece.dataset.shape = name;
     piece.dataset.rotation = 0;
 
-    shape.rotations[0].forEach((coord, i) => {
+    // Build blocks using flex layout (no absolute positioning)
+    shape.rotations[0].forEach(coord => {
       const block = document.createElement("div");
       block.classList.add("block");
       block.style.background = shape.colors[0];
-      block.style.left = coord[1] * 60 + "px";
-      block.style.top = coord[0] * 60 + "px";
-      block.style.position = "absolute";
       piece.appendChild(block);
     });
 
-    piece.style.left = offsetX + "px";
-    piece.style.top = offsetY + "px";
-
-    offsetX += 140;
-    if (offsetX > 300) {
-      offsetX = 0;
-      offsetY += 140;
-    }
+    // Place piece using startingPositions
+    const pos = startingPositions[name];
+    piece.style.gridRow = pos.row;
+    piece.style.gridColumn = pos.col;
 
     toolbox.appendChild(piece);
     enablePieceInteraction(piece);
@@ -329,23 +313,24 @@ function enablePieceInteraction(piece) {
   let dragging = false;
 
   piece.addEventListener("pointerdown", e => {
-    dragging = false; // reset
+    dragging = true;
+
+    // Switch to absolute positioning for dragging
+    piece.style.position = "absolute";
+
     startX = e.clientX - piece.offsetLeft;
     startY = e.clientY - piece.offsetTop;
     piece.setPointerCapture(e.pointerId);
 
     piece.onpointermove = ev => {
-  const x = ev.clientX - startX;
-  const y = ev.clientY - startY;
-  piece.style.left = x + "px";
-  piece.style.top = y + "px";
+      const x = ev.clientX - startX;
+      const y = ev.clientY - startY;
 
-  const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
+      piece.style.left = x + "px";
+      piece.style.top = y + "px";
 
-  updateDebugPanel();    
-  checkWinCondition(); // NEW
-  
-};
+      updateDebugPanel();
+    };
 
     piece.onpointerup = ev => {
       piece.releasePointerCapture(ev.pointerId);
@@ -353,18 +338,48 @@ function enablePieceInteraction(piece) {
 
       const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
 
+      // If dropped inside toolbox → snap back to grid
+      if (isInsideToolbox(piece)) {
+        const pos = startingPositions[piece.dataset.shape];
+
+        piece.style.position = "relative";
+        piece.style.left = "";
+        piece.style.top = "";
+
+        piece.style.gridRow = pos.row;
+        piece.style.gridColumn = pos.col;
+      }
+
+      updateDebugPanel();
+      checkWinCondition();
     };
   });
 
   piece.addEventListener("click", () => {
     if (!dragging) {
-      rotatePiece(piece); // rotate ONLY if not dragging
+      rotatePiece(piece);
       updateDebugPanel();
+      checkWinCondition();
     }
-    checkWinCondition(); // NEW
   });
-}
 
+
+  function isInsideToolbox(piece) {
+  const toolbox = document.getElementById("toolbox");
+  const tbRect = toolbox.getBoundingClientRect();
+  const pRect = piece.getBoundingClientRect();
+
+  // Check if the piece's center is inside the toolbox rectangle
+  const centerX = pRect.left + pRect.width / 2;
+  const centerY = pRect.top + pRect.height / 2;
+
+  return (
+    centerX >= tbRect.left &&
+    centerX <= tbRect.right &&
+    centerY >= tbRect.top &&
+    centerY <= tbRect.bottom
+  );
+}
 function rotatePiece(piece) {
   const shape = shapes[piece.dataset.shape];
   let rot = parseInt(piece.dataset.rotation);
