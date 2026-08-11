@@ -241,13 +241,11 @@ threeL: {
       }
     }
 function resetPiecesToToolbox() {
-  const toolbox = document.getElementById("toolbox");
   const pieces = document.querySelectorAll(".piece");
 
   pieces.forEach(piece => {
-    piece.style.left = "";
-    piece.style.top = "";
-    toolbox.appendChild(piece);
+    piece.remove();
+    createToolbox();
   });
 }
 function createToolbox() {
