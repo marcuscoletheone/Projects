@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Custom 7‑Dice Roller</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #f0f4ff, #e8f9f1);
+      color: #333;
+    }
+
+    h1 {
+      color: #2a3d66;
+    }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(6, 60px);
+      grid-template-rows: repeat(6, 60px);
+      gap: 6px;
+      margin: 25px auto;
+      width: max-content;
+
+      /* 3D board effect */
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 
+        0 4px 8px rgba(0,0,0,0.15),
+        inset 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    .cell {
+      width: 60px;
+      height: 60px;
+      background: #fafafa;
+      border-radius: 8px;
+      border: 1px solid #d0d0d0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .highlight {
+      background: #ffe066;
+      border-color: #ffcc33;
+      transform: translateY(-3px);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      font-weight: bold;
+    }
+
+    button {
+      padding: 12px 25px;
+      font-size: 1.2rem;
+      margin-top: 20px;
+      cursor: pointer;
+      background: #4a6fa5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #3b5a85;
+    }
+
+  #results {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .die {
+    background: white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    box-shadow: 0 0 6px rgba(0,0,0,0.15);
+    font-size: 0.9rem;
+    display: inline-block;
+  }
+ #toolbox {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin: 25px auto;
+  max-width: 420px;
+   position: relative;
+}
+
+.piece {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  cursor: grab;
+  touch-action: none;
+}
+
+.block {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  box-shadow:
+    inset 0 4px 6px rgba(255,255,255,0.6),
+    inset 0 -4px 6px rgba(0,0,0,0.25),
+    0 4px 8px rgba(0,0,0,0.25);
+}
+  </style>
+</head>
+
+<body>
+  <h1>Custom 7‑Dice Roller</h1>
+  <button onclick="rollAll()">Start Game (Set new Barriers)🎲</button>
+
+  <div id="results"></div>
+  <div id="debugPanel"></div>
+
+  <div id="board"></div>
+  <div id="winMessage" style="margin-top:10px; font-size:20px; font-weight:bold;"></div>
+
+<div id="toolbox"></div>
+  <script>
+    const shapes = {
+  one: {
+    rotations: [[[0,0]]],
+    colors: ["#4d96ff"] // blue
+  },
+  twoLine: {
+    rotations: [
+      [[0,0],[0,1]],
+      [[0,0],[1,0]]
+    ],
+    colors: ["#A97458"] // brown
+  },
+  threeLine: {
+    rotations: [
+      [[0,0],[0,1],[0,2]],
+      [[0,0],[1,0],[2,0]]
+    ],
+    colors: ["#FFA500"] // orange
+  },
+threeL: {
+  rotations: [
+    // Hole: top-left
+    [[1,0],[0,1],[1,1]],
+
+    // Hole: top-right
+    [[0,0],[0,1],[1,1]],
+
+    // Hole: bottom-right
+    [[0,0],[1,0],[0,1]],
+
+    // Hole: bottom-left
+    [[0,0],[1,0],[1,1]]
+  ],
+  colors: ["#9b5de5"] // purple
+},
+  fourLine: {
+    rotations: [
+      [[0,0],[0,1],[0,2],[0,3]],
+      [[0,0],[1,0],[2,0],[3,0]]
+    ],
+    colors: ["#000000"] // black
+  },
+  square4: {
+    rotations: [
+      [[0,0],[0,1],[1,0],[1,1]]
+    ],
+    colors: ["#6bcb77"] // green
+  },
+  fourL: {
+  rotations: [
+    // Original L
+    [[0,0],[1,0],[2,0],[2,1]],
+    [[0,1],[0,0],[0,2],[1,0]],
+    [[0,0],[0,1],[1,1],[2,1]],
+    [[1,0],[1,1],[1,2],[0,2]],
+
+    // Mirrored L
+    [[0,1],[1,1],[2,1],[2,0]],
+    [[0,0],[1,0],[1,1],[1,2]],
+    [[0,0],[0,1],[1,0],[2,0]],
+    [[0,0],[0,1],[0,2],[1,2]]
+  ],
+    colors: ["#00bbf9"] // cyan
+  },
+  fourT: {
+    rotations: [
+      [[0,0],[0,1],[0,2],[1,1]],
+      [[0,1],[1,1],[2,1],[1,0]],
+      [[1,0],[1,1],[1,2],[0,1]],
+      [[0,0],[1,0],[2,0],[1,1]]
+    ],
+    colors: ["#fee440"] // bright yellow
+  },
+  fourZ: {
+  rotations: [
+    // Z shape
+    [[0,0],[0,1],[1,1],[1,2]],
+    [[0,1],[1,1],[1,0],[2,0]],
+
+    // S shape (mirror)
+    [[0,1],[0,2],[1,0],[1,1]],
+    [[0,0],[1,0],[1,1],[2,1]]
+  ],
+    colors: ["#ff6b6b"] // red
+  }
+};
+    const dice = [
+      { name: "Die 1", faces: ["F2", "A5", "F2", "A5", "E1", "B6"] },
+      { name: "Die 2", faces: ["F6", "A4", "D6", "C5", "C6", "B5"] },
+      { name: "Die 3", faces: ["B2", "B1", "A3", "A2", "C2", "B3"] },
+      { name: "Die 4", faces: ["D4", "B4", "E3", "C4", "C3", "D3"] },
+      { name: "Die 5", faces: ["E6", "E5", "E4", "D5", "F5", "F4"] },
+      { name: "Die 6", faces: ["C1", "A1", "D2", "D1", "F3", "E2"] },
+      { name: "Die 7", faces: ["F1", "A6", "F1", "A6", "F1", "A6"] }
+    ];
+
+    const rows = ["A","B","C","D","E","F"];
+    const cols = ["1","2","3","4","5","6"];
+
+    function buildBoard() {
+      const board = document.getElementById("board");
+      board.innerHTML = "";
+      for (let r = 0; r < 6; r++) {
+        for (let c = 0; c < 6; c++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.id = rows[r] + cols[c];
+          cell.innerText = rows[r] + cols[c];
+          board.appendChild(cell);
+        }
+      }
+    }
+function resetPiecesToToolbox() {
+  const toolbox = document.getElementById("toolbox");
+  const pieces = document.querySelectorAll(".piece");
+
+  pieces.forEach(piece => {
+    piece.style.left = "";
+    piece.style.top = "";
+    toolbox.appendChild(piece);
+  });
+}
+function createToolbox() {
+  const toolbox = document.getElementById("toolbox");
+  let offsetX = 0, offsetY = 0;
+
+  Object.entries(shapes).forEach(([name, shape]) => {
+    const piece = document.createElement("div");
+    piece.classList.add("piece");
+    piece.dataset.shape = name;
+    piece.dataset.rotation = 0;
+
+    shape.rotations[0].forEach((coord, i) => {
+      const block = document.createElement("div");
+      block.classList.add("block");
+      block.style.background = shape.colors[0];
+      block.style.left = coord[1] * 60 + "px";
+      block.style.top = coord[0] * 60 + "px";
+      block.style.position = "absolute";
+      piece.appendChild(block);
+    });
+
+    piece.style.left = offsetX + "px";
+    piece.style.top = offsetY + "px";
+
+    offsetX += 140;
+    if (offsetX > 300) {
+      offsetX = 0;
+      offsetY += 140;
+    }
+
+    toolbox.appendChild(piece);
+    enablePieceInteraction(piece);
+  });
+}
+
+createToolbox();
+function enablePieceInteraction(piece) {
+  let startX, startY;
+  let dragging = false;
+
+  piece.addEventListener("pointerdown", e => {
+    dragging = false; // reset
+    startX = e.clientX - piece.offsetLeft;
+    startY = e.clientY - piece.offsetTop;
+    piece.setPointerCapture(e.pointerId);
+
+    piece.onpointermove = ev => {
+  const x = ev.clientX - startX;
+  const y = ev.clientY - startY;
+  piece.style.left = x + "px";
+  piece.style.top = y + "px";
+
+  const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
+
+  updateDebugPanel();    
+  checkWinCondition(); // NEW
+  
+};
+
+    piece.onpointerup = ev => {
+      piece.releasePointerCapture(ev.pointerId);
+      piece.onpointermove = null;
+
+      const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
+
+    };
+  });
+
+  piece.addEventListener("click", () => {
+    if (!dragging) {
+      rotatePiece(piece); // rotate ONLY if not dragging
+      updateDebugPanel();
+    }
+    checkWinCondition(); // NEW
+  });
+}
+
+function rotatePiece(piece) {
+  const shape = shapes[piece.dataset.shape];
+  let rot = parseInt(piece.dataset.rotation);
+  rot = (rot + 1) % shape.rotations.length;
+  piece.dataset.rotation = rot;
+
+  [...piece.children].forEach((block, i) => {
+    const [r, c] = shape.rotations[rot][i];
+    block.style.left = c * 60 + "px";
+    block.style.top = r * 60 + "px";
+  });
+}
+
+function getPieceBoardCoords(piece) {
+  const rect = piece.getBoundingClientRect();
+  const boardRect = document.getElementById("board").getBoundingClientRect();
+
+  const padding = 20; // board padding
+
+  const anchorCol = Math.round((rect.left - boardRect.left - padding) / 60);
+  const anchorRow = Math.round((rect.top - boardRect.top - padding) / 60);
+
+  const shape = shapes[piece.dataset.shape];
+  const rot = parseInt(piece.dataset.rotation);
+
+  return {
+    anchorRow,
+    anchorCol,
+    coords: shape.rotations[rot].map(([r, c]) => [anchorRow + r, anchorCol + c])
+  };
+}
+
+function isValidPlacement(coords) {
+  for (const [r, c] of coords) {
+    if (r < 0 || r > 5 || c < 0 || c > 5) return false;
+    const cell = document.getElementById(`${String.fromCharCode(65+r)}${c+1}`);
+    if (cell.classList.contains("barrier")) return false;
+  }
+  return true;
+}
+
+    function clearHighlights() {
+      document.querySelectorAll(".cell").forEach(cell => {
+        cell.classList.remove("highlight");
+      });
+    }
+
+    function rollAll() {
+      resetPiecesToToolbox();
+      clearHighlights();
+      document.getElementById("winMessage").textContent = "";
+      document.querySelectorAll(".barrier").forEach(cell => {
+  cell.classList.remove("barrier", "highlight");
+});
+
+      let html = "";
+      dice.forEach(die => {
+        const value = die.faces[Math.floor(Math.random() * die.faces.length)];
+        html += `<div class="die"><strong>${die.name}:</strong> ${value}</div>`;
+
+        const cell = document.getElementById(value);
+        if (cell) cell.classList.add("highlight", "barrier");
+      });
+
+      document.getElementById("results").innerHTML = html;
+      updateDebugPanel();
+    }
+
+  function checkWinCondition() {
+  const boardRect = document.getElementById("board").getBoundingClientRect();
+  const pieces = document.querySelectorAll(".piece");
+  const padding = 20; // IMPORTANT FIX
+
+  // Track coverage
+  const covered = new Set();
+
+  pieces.forEach(piece => {
+    const shape = shapes[piece.dataset.shape];
+    const rot = parseInt(piece.dataset.rotation);
+
+    const rect = piece.getBoundingClientRect();
+    const anchorCol = Math.round((rect.left - boardRect.left - padding) / 60);
+    const anchorRow = Math.round((rect.top - boardRect.top - padding) / 60);
+
+    shape.rotations[rot].forEach(([r, c]) => {
+      const row = anchorRow + r;
+      const col = anchorCol + c;
+
+      if (row >= 0 && row < 6 && col >= 0 && col < 6) {
+        covered.add(`${row},${col}`);
+      }
+    });
+  });
+
+  // Check all non-barrier squares
+  for (let r = 0; r < 6; r++) {
+    for (let c = 0; c < 6; c++) {
+      const cell = document.getElementById(`${String.fromCharCode(65+r)}${c+1}`);
+      if (!cell.classList.contains("barrier")) {
+        if (!covered.has(`${r},${c}`)) {
+          return false; // not yet solved
+        }
+      }
+    }
+  }
+
+  document.getElementById("winMessage").textContent = "🎉 You solved it!";
+  return true;
+}
+    function updateDebugPanel() {
+  const boardRect = document.getElementById("board").getBoundingClientRect();
+  const pieces = document.querySelectorAll(".piece");
+  const padding = 20; // board padding
+
+  // Track coverage
+  const covered = new Set();
+
+  pieces.forEach(piece => {
+    const shape = shapes[piece.dataset.shape];
+    const rot = parseInt(piece.dataset.rotation);
+
+    const rect = piece.getBoundingClientRect();
+    const anchorCol = Math.round((rect.left - boardRect.left - padding) / 60);
+    const anchorRow = Math.round((rect.top - boardRect.top - padding) / 60);
+
+    shape.rotations[rot].forEach(([r, c]) => {
+      const row = anchorRow + r;
+      const col = anchorCol + c;
+
+      if (row >= 0 && row < 6 && col >= 0 && col < 6) {
+        covered.add(`${row},${col}`);
+      }
+    });
+  });
+
+  // Build readable output
+  let out = "";
+  for (let r = 0; r < 6; r++) {
+    for (let c = 0; c < 6; c++) {
+      const cell = document.getElementById(`${String.fromCharCode(65+r)}${c+1}`);
+
+      if (cell.classList.contains("barrier")) {
+        out += "[X]";
+      } else if (covered.has(`${r},${c}`)) {
+        out += "[■]";
+      } else {
+        out += "[□]";
+      }
+    }
+    out += "<br>";
+  }
+
+  document.getElementById("debugPanel").innerHTML = out;
+}
+
+    buildBoard();
+  </script>
+</body>
+</html>
