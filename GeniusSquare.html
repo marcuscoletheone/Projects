@@ -87,10 +87,11 @@
     display: inline-block;
   }
 
-    #toolbox {
+ #toolbox {
   position: relative;
-  width: 260px;
-  height: 180px;
+  width: 420px;      /* match your image width */
+  height: 200px;     /* adjust to fit your pieces */
+  margin: 25px auto;
   padding: 10px;
   background: #f4f4f4;
   border-radius: 8px;
@@ -128,13 +129,17 @@
 
 <div id="toolbox"></div>
   <script>
-    const startingPositions = [
-  { left: 10,  top: 10 },
-  { left: 90,  top: 10 },
-  { left: 170, top: 10 },
-  { left: 10,  top: 90 },
-  { left: 90,  top: 90 },
-  { left: 170, top: 90 }
+const startingPositions = [
+  { left: 10,  top: 10 },   // purple
+  { left: 90,  top: 10 },   // black
+  { left: 170, top: 10 },   // orange
+  { left: 250, top: 10 },   // brown
+  { left: 330, top: 10 },   // blue
+
+  { left: 10,  top: 90 },   // red
+  { left: 90,  top: 90 },   // yellow
+  { left: 170, top: 90 },   // green
+  { left: 250, top: 90 },   // etc...
 ];
     const shapes = {
   one: {
@@ -253,8 +258,8 @@ function resetPiecesToToolbox() {
   const pieces = document.querySelectorAll(".piece");
 
   pieces.forEach((piece, index) => {
-    piece.dataset.rotation = 0; // reset rotation
-    piece.style.transform = ""; // clear transform
+    piece.dataset.rotation = 0;
+    piece.style.transform = "";
 
     piece.style.left = startingPositions[index].left + "px";
     piece.style.top  = startingPositions[index].top  + "px";
