@@ -86,14 +86,14 @@
     font-size: 0.9rem;
     display: inline-block;
   }
- #toolbox {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 14px;
-  margin: 25px auto;
-  max-width: 420px;
-   position: relative;
+
+    #toolbox {
+  position: relative;
+  width: 260px;
+  height: 180px;
+  padding: 10px;
+  background: #f4f4f4;
+  border-radius: 8px;
 }
 
 .piece {
@@ -128,6 +128,14 @@
 
 <div id="toolbox"></div>
   <script>
+    const startingPositions = [
+  { left: 10,  top: 10 },
+  { left: 90,  top: 10 },
+  { left: 170, top: 10 },
+  { left: 10,  top: 90 },
+  { left: 90,  top: 90 },
+  { left: 170, top: 90 }
+];
     const shapes = {
   one: {
     rotations: [[[0,0]]],
@@ -244,9 +252,13 @@ function resetPiecesToToolbox() {
   const toolbox = document.getElementById("toolbox");
   const pieces = document.querySelectorAll(".piece");
 
-  pieces.forEach(piece => {
-    piece.style.left = "";
-    piece.style.top = "";
+  pieces.forEach((piece, index) => {
+    piece.dataset.rotation = 0; // reset rotation
+    piece.style.transform = ""; // clear transform
+
+    piece.style.left = startingPositions[index].left + "px";
+    piece.style.top  = startingPositions[index].top  + "px";
+
     toolbox.appendChild(piece);
   });
 }
