@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Custom 7‑Dice Roller</title>
+  <title>Square Puzzle</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -241,12 +241,14 @@ threeL: {
       }
     }
 function resetPiecesToToolbox() {
+  const toolbox = document.getElementById("toolbox");
   const pieces = document.querySelectorAll(".piece");
 
   pieces.forEach(piece => {
-   piece.remove();
+    piece.style.left = "";
+    piece.style.top = "";
+    toolbox.appendChild(piece);
   });
-  createToolbox()
 }
 function createToolbox() {
   const toolbox = document.getElementById("toolbox");
