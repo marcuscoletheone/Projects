@@ -101,13 +101,14 @@
 
 .piece {
   position: relative; 
-  display: flex;
-  flex-wrap: wrap;
+  width: 180px;  /* Provides container space for rotations */
+  height: 180px;
   cursor: grab;
   touch-action: none;
 }
 
 .block {
+  position: absolute; /* REQUIRED for top/left positioning to work */
   width: 60px;
   height: 60px;
   border-radius: 8px;
@@ -291,11 +292,12 @@ function createToolbox() {
     piece.dataset.shape = name;
     piece.dataset.rotation = 0;
 
-    // Build blocks using flex layout (no absolute positioning)
-    shape.rotations[0].forEach(coord => {
+    shape.rotations[0].forEach(([r, c]) => {
       const block = document.createElement("div");
       block.classList.add("block");
       block.style.background = shape.colors[0];
+      block.style.top = (r * 60) + "px";
+      block.style.left = (c * 60) + "px";
       piece.appendChild(block);
     });
 
