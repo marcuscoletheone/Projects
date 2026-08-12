@@ -107,6 +107,12 @@
   flex-wrap: wrap;
   cursor: grab;
   touch-action: none;
+  transition: transform 0.15s ease;
+}
+
+    .piece.lifted {
+  transform: translateY(-20px) scale(1.05);
+  z-index: 9999;
 }
 
 .block {
@@ -351,6 +357,7 @@ function enablePieceInteraction(piece) {
     startX = e.clientX - piece.offsetLeft;
     startY = e.clientY - piece.offsetTop;
     piece.setPointerCapture(e.pointerId);
+    piece.classList.add("lifted");
 
     piece.onpointermove = ev => {
       const x = ev.clientX - startX;
@@ -369,6 +376,7 @@ function enablePieceInteraction(piece) {
     piece.onpointerup = ev => {
   piece.releasePointerCapture(ev.pointerId);
   piece.onpointermove = null;
+  piece.classList.remove("lifted");
 
   // Clear hover highlights
   document.querySelectorAll(".cell").forEach(cell => {
