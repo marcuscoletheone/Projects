@@ -245,6 +245,30 @@ threeL: {
         }
       }
     }
+    function isSquareOccupied(row, col, exceptPiece = null) {
+  const pieces = document.querySelectorAll(".piece");
+
+  for (const piece of pieces) {
+    if (piece === exceptPiece) continue;
+
+    const shape = shapes[piece.dataset.shape];
+    const rot = parseInt(piece.dataset.rotation);
+    const rect = piece.getBoundingClientRect();
+    const boardRect = document.getElementById("board").getBoundingClientRect();
+    const padding = 0; // because your board padding is 0 now
+
+    const anchorCol = Math.round((rect.left - boardRect.left - padding) / 66);
+    const anchorRow = Math.round((rect.top  - boardRect.top  - padding) / 66);
+
+    for (const [r, c] of shape.rotations[rot]) {
+      if (anchorRow + r === row && anchorCol + c === col) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
 function snapPieceToGrid(piece) {
   const boardRect = document.getElementById("board").getBoundingClientRect();
   const pieceRect = piece.getBoundingClientRect();
@@ -361,7 +385,7 @@ function enablePieceInteraction(piece) {
   const { coords } = getPieceBoardCoords(piece);
 
   // Snap only if valid
-  if (isValidPlacement(coords)) {
+  if (isValidPlacement(coords,piece)) {
     snapPieceToGrid(piece);
   }
 
@@ -411,11 +435,13 @@ function getPieceBoardCoords(piece) {
   };
 }
 
-function isValidPlacement(coords) {
+function isValidPlacement(coords,piece) {
   for (const [r, c] of coords) {
     if (r < 0 || r > 5 || c < 0 || c > 5) return false;
     const cell = document.getElementById(`${String.fromCharCode(65+r)}${c+1}`);
     if (cell.classList.contains("barrier")) return false;
+        // NEW: prevent overlapping other pieces
+    if (isSquareOccupied(r, c, piece)) return false;
   }
   return true;
 }
