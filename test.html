@@ -111,11 +111,7 @@
 }
 
     .piece.lifted {
-  transform: translateY(-240px) scale(1.05);
-  z-index: 9999;
-}
-    piece.popped {
-  transform: translateY(-20px) scale(1.12);
+  transform: translateY(-20px) scale(1.05);
   z-index: 9999;
 }
 
@@ -361,15 +357,9 @@ function enablePieceInteraction(piece) {
     startX = e.clientX - piece.offsetLeft;
     startY = e.clientY - piece.offsetTop;
     piece.setPointerCapture(e.pointerId);
-
-    // ⭐ DRAG LIFT (big lift)
-    piece.classList.remove("lifted");
-    piece.classList.add("popped");
+    piece.classList.add("lifted");
 
     piece.onpointermove = ev => {
-      dragging = true;
-      piece.classList.remove("popped");
-      piece.classList.add("lifted");
       const x = ev.clientX - startX;
       const y = ev.clientY - startY;
       piece.style.left = x + "px";
@@ -377,46 +367,41 @@ function enablePieceInteraction(piece) {
 
       const { coords } = getPieceBoardCoords(piece);
 
-      highlightHoveredSquares(coords);
+      highlightHoveredSquares(coords);   // NEW
+
       updateDebugPanel();
       checkWinCondition();
     };
 
     piece.onpointerup = ev => {
-      piece.releasePointerCapture(ev.pointerId);
-      piece.onpointermove = null;
+  piece.releasePointerCapture(ev.pointerId);
+  piece.onpointermove = null;
+  piece.classList.remove("lifted");
 
-    
+  // Clear hover highlights
+  document.querySelectorAll(".cell").forEach(cell => {
+    cell.classList.remove("hover");
+  });
 
-      document.querySelectorAll(".cell").forEach(cell => {
-        cell.classList.remove("hover");
-      });
+  const { coords } = getPieceBoardCoords(piece);
 
-      const { coords } = getPieceBoardCoords(piece);
+  // Snap only if valid
+  if (isValidPlacement(coords,piece)) {
+    snapPieceToGrid(piece);
+  }
 
-      if (isValidPlacement(coords, piece)) {
-        snapPieceToGrid(piece);
-      }
-
-      updateDebugPanel();
-      checkWinCondition();
-    };
+  updateDebugPanel();
+  checkWinCondition();
+};
   });
 
   piece.addEventListener("click", () => {
-    // ⭐ TAP POP (only if not dragging)
+    // ⭐ If rotating instead of dragging, drop the lift immediately
+  piece.classList.remove("lifted");
     if (!dragging) {
-      piece.classList.remove("lifted");   // never lift on tap
-      piece.classList.add("popped");
-
-      setTimeout(() => {
-        piece.classList.remove("popped");
-      }, 120);
-
-      rotatePiece(piece);
+      rotatePiece(piece); // rotate ONLY if not dragging
       updateDebugPanel();
     }
-
     checkWinCondition();
   });
 }
