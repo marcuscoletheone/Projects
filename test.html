@@ -316,27 +316,29 @@ function enablePieceInteraction(piece) {
     piece.setPointerCapture(e.pointerId);
 
     piece.onpointermove = ev => {
-  const x = ev.clientX - startX;
-  const y = ev.clientY - startY;
-  piece.style.left = x + "px";
-  piece.style.top = y + "px";
+      const x = ev.clientX - startX;
+      const y = ev.clientY - startY;
+      piece.style.left = x + "px";
+      piece.style.top = y + "px";
 
-  const { coords } = getPieceBoardCoords(piece);
+      const { coords } = getPieceBoardCoords(piece);
 
-highlightHoveredSquares(coords);   // NEW
+      highlightHoveredSquares(coords);   // NEW
 
-updateDebugPanel();
-checkWinCondition();
+      updateDebugPanel();
+      checkWinCondition();
+    };
 
     piece.onpointerup = ev => {
       piece.releasePointerCapture(ev.pointerId);
       piece.onpointermove = null;
 
-      const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
+      // Clear hover highlights
       document.querySelectorAll(".cell").forEach(cell => {
-  cell.classList.remove("hover");
-});
+        cell.classList.remove("hover");
+      });
 
+      const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
     };
   });
 
@@ -345,7 +347,7 @@ checkWinCondition();
       rotatePiece(piece); // rotate ONLY if not dragging
       updateDebugPanel();
     }
-    checkWinCondition(); // NEW
+    checkWinCondition();
   });
 }
 
