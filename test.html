@@ -304,18 +304,10 @@ function highlightHoveredSquares(coords) {
   });
 }
     
-    function resetPiecesToToolbox() {
+function buildToolboxLayout() {
   const toolbox = document.getElementById("toolbox");
-  const pieces = document.querySelectorAll(".piece");
+  toolbox.innerHTML = ""; // Clear old pieces
 
-  pieces.forEach(piece => {
-    piece.style.left = "";
-    piece.style.top = "";
-    toolbox.appendChild(piece);
-  });
-}
-function createToolbox() {
-  const toolbox = document.getElementById("toolbox");
   let offsetX = 0, offsetY = 0;
 
   Object.entries(shapes).forEach(([name, shape]) => {
@@ -324,6 +316,7 @@ function createToolbox() {
     piece.dataset.shape = name;
     piece.dataset.rotation = 0;
 
+    // Build blocks
     shape.rotations[0].forEach((coord, i) => {
       const block = document.createElement("div");
       block.classList.add("block");
@@ -334,6 +327,7 @@ function createToolbox() {
       piece.appendChild(block);
     });
 
+    // Position in toolbox grid
     piece.style.left = offsetX + "px";
     piece.style.top = offsetY + "px";
 
@@ -347,8 +341,7 @@ function createToolbox() {
     enablePieceInteraction(piece);
   });
 }
-
-createToolbox();
+buildToolboxLayout();
 function enablePieceInteraction(piece) {
   let startX, startY;
   let dragging = false;
@@ -453,7 +446,7 @@ function isValidPlacement(coords,piece) {
     }
 
     function rollAll() {
-      resetPiecesToToolbox();
+      buildToolboxLayout();
       clearHighlights();
       document.getElementById("winMessage").textContent = "";
       document.querySelectorAll(".barrier").forEach(cell => {
