@@ -387,8 +387,15 @@ function enablePieceInteraction(piece) {
       piece.onpointermove = null;
 
       // ⭐ DROP LIFT
-      piece.classList.remove("lifted");
-      piece.classList.remove("popped");
+      // ⭐ DROP LIFT without animation
+piece.style.transition = "none";
+piece.classList.remove("lifted");
+
+// Force browser to apply the change immediately
+piece.getBoundingClientRect();
+
+// ⭐ Restore transition for future lifts/pops
+piece.style.transition = "transform 0.15s ease";
 
       document.querySelectorAll(".cell").forEach(cell => {
         cell.classList.remove("hover");
