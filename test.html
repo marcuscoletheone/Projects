@@ -245,6 +245,24 @@ threeL: {
         }
       }
     }
+    function snapPieceToGrid(piece) {
+  const boardRect = document.getElementById("board").getBoundingClientRect();
+  const padding = 20; // board padding
+
+  const rect = piece.getBoundingClientRect();
+
+  // Compute nearest grid cell
+  const anchorCol = Math.round((rect.left - boardRect.left - padding) / 60);
+  const anchorRow = Math.round((rect.top - boardRect.top - padding) / 60);
+
+  // Convert back to pixel position
+  const snappedLeft = boardRect.left + padding + anchorCol * 60;
+  const snappedTop  = boardRect.top  + padding + anchorRow * 60;
+
+  // Apply snapping
+  piece.style.left = snappedLeft + "px";
+  piece.style.top  = snappedTop + "px";
+}
 function highlightHoveredSquares(coords) {
   // Remove old hover highlights
   document.querySelectorAll(".cell").forEach(cell => {
@@ -331,16 +349,24 @@ function enablePieceInteraction(piece) {
     };
 
     piece.onpointerup = ev => {
-      piece.releasePointerCapture(ev.pointerId);
-      piece.onpointermove = null;
+  piece.releasePointerCapture(ev.pointerId);
+  piece.onpointermove = null;
 
-      // Clear hover highlights
-      document.querySelectorAll(".cell").forEach(cell => {
-        cell.classList.remove("hover");
-      });
+  // Clear hover highlights
+  document.querySelectorAll(".cell").forEach(cell => {
+    cell.classList.remove("hover");
+  });
 
-      const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
-    };
+  const { coords } = getPieceBoardCoords(piece);
+
+  // Snap only if valid
+  if (isValidPlacement(coords)) {
+    snapPieceToGrid(piece);
+  }
+
+  updateDebugPanel();
+  checkWinCondition();
+};
   });
 
   piece.addEventListener("click", () => {
