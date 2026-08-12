@@ -248,7 +248,7 @@ threeL: {
 function snapPieceToGrid(piece) {
   const boardRect = document.getElementById("board").getBoundingClientRect();
   const pieceRect = piece.getBoundingClientRect();
-  const padding = 20;
+  const padding = 0;
 
   // Compute nearest grid cell
   const anchorCol = Math.round((pieceRect.left - boardRect.left - padding) / 60);
