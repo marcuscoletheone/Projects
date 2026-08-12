@@ -245,23 +245,24 @@ threeL: {
         }
       }
     }
-    function snapPieceToGrid(piece) {
+function snapPieceToGrid(piece) {
   const boardRect = document.getElementById("board").getBoundingClientRect();
-  const padding = 20; // board padding
-
-  const rect = piece.getBoundingClientRect();
+  const pieceRect = piece.getBoundingClientRect();
+  const padding = 20;
 
   // Compute nearest grid cell
-  const anchorCol = Math.round((rect.left - boardRect.left - padding) / 60);
-  const anchorRow = Math.round((rect.top - boardRect.top - padding) / 60);
+  const anchorCol = Math.round((pieceRect.left - boardRect.left - padding) / 60);
+  const anchorRow = Math.round((pieceRect.top  - boardRect.top  - padding) / 60);
 
-  // Convert back to pixel position
-  const snappedLeft = boardRect.left + padding + anchorCol * 60;
-  const snappedTop  = boardRect.top  + padding + anchorRow * 60;
+  // Convert board grid coords back to piece.style.left/top
+  const snappedLeft = (anchorCol * 60) + boardRect.left + padding;
+  const snappedTop  = (anchorRow * 60) + boardRect.top  + padding;
 
-  // Apply snapping
-  piece.style.left = snappedLeft + "px";
-  piece.style.top  = snappedTop + "px";
+  // Convert viewport coords → parent coords
+  const parentRect = piece.offsetParent.getBoundingClientRect();
+
+  piece.style.left = (snappedLeft - parentRect.left) + "px";
+  piece.style.top  = (snappedTop  - parentRect.top) + "px";
 }
 function highlightHoveredSquares(coords) {
   // Remove old hover highlights
