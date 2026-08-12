@@ -31,7 +31,11 @@
         0 4px 8px rgba(0,0,0,0.15),
         inset 0 0 10px rgba(0,0,0,0.05);
     }
-
+.hover {
+  background: #c7ff8a;
+  border-color: #8cd95b;
+  transform: translateY(-2px);
+}
     .cell {
       width: 60px;
       height: 60px;
@@ -240,7 +244,23 @@ threeL: {
         }
       }
     }
-function resetPiecesToToolbox() {
+function highlightHoveredSquares(coords) {
+  // Remove old hover highlights
+  document.querySelectorAll(".cell").forEach(cell => {
+    cell.classList.remove("hover");
+  });
+
+  coords.forEach(([r, c]) => {
+    if (r >= 0 && r < 6 && c >= 0 && c < 6) {
+      const cell = document.getElementById(`${String.fromCharCode(65+r)}${c+1}`);
+      if (!cell.classList.contains("barrier")) {
+        cell.classList.add("hover");
+      }
+    }
+  });
+}
+    
+    function resetPiecesToToolbox() {
   const toolbox = document.getElementById("toolbox");
   const pieces = document.querySelectorAll(".piece");
 
@@ -301,18 +321,21 @@ function enablePieceInteraction(piece) {
   piece.style.left = x + "px";
   piece.style.top = y + "px";
 
-  const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
+  const { coords } = getPieceBoardCoords(piece);
 
-  updateDebugPanel();    
-  checkWinCondition(); // NEW
-  
-};
+highlightHoveredSquares(coords);   // NEW
+
+updateDebugPanel();
+checkWinCondition();
 
     piece.onpointerup = ev => {
       piece.releasePointerCapture(ev.pointerId);
       piece.onpointermove = null;
 
       const { anchorRow, anchorCol, coords } = getPieceBoardCoords(piece);
+      document.querySelectorAll(".cell").forEach(cell => {
+  cell.classList.remove("hover");
+});
 
     };
   });
