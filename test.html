@@ -396,6 +396,8 @@ function enablePieceInteraction(piece) {
   });
 
   piece.addEventListener("click", () => {
+    // ⭐ If rotating instead of dragging, drop the lift immediately
+  piece.classList.remove("lifted");
     if (!dragging) {
       rotatePiece(piece); // rotate ONLY if not dragging
       updateDebugPanel();
