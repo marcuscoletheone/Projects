@@ -363,11 +363,13 @@ function enablePieceInteraction(piece) {
     piece.setPointerCapture(e.pointerId);
 
     // ⭐ DRAG LIFT (big lift)
-    piece.classList.add("lifted");
+    piece.classList.remove("lifted");
+    piece.classList.add("popped");
 
     piece.onpointermove = ev => {
       dragging = true;
-
+      piece.classList.remove("popped");
+      piece.classList.add("lifted");
       const x = ev.clientX - startX;
       const y = ev.clientY - startY;
       piece.style.left = x + "px";
@@ -386,6 +388,7 @@ function enablePieceInteraction(piece) {
 
       // ⭐ DROP LIFT
       piece.classList.remove("lifted");
+      piece.classList.remove("popped");
 
       document.querySelectorAll(".cell").forEach(cell => {
         cell.classList.remove("hover");
