@@ -300,7 +300,7 @@ let timerRunning = false; // prevents double-start
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
 
-    const formatted = `${minutes}:${seconds.toString().padStart(2, "0")} min`;
+    const formatted = `${minutes}m ${seconds.toString().padStart(2, "0")}s`;
     document.getElementById("timerDisplay").textContent = formatted;
 }
     function startTimer() {
