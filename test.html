@@ -14,7 +14,32 @@
     h1 {
       color: #2a3d66;
     }
+#boardWrapper {
+  position: relative;
+  display: inline-block;
+}
 
+#topLabels {
+  display: grid;
+  grid-template-columns: repeat(6, 60px);
+  margin-left: 20px; /* matches board padding */
+  margin-bottom: 6px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+#leftLabels {
+  position: absolute;
+  top: 20px; /* matches board padding */
+  left: -30px;
+  display: grid;
+  grid-template-rows: repeat(6, 60px);
+  height: 360px;
+  align-items: center;
+  font-weight: bold;
+  font-size: 20px;
+}
     #board {
       display: grid;
       grid-template-columns: repeat(6, 60px);
@@ -133,7 +158,17 @@
 
   <div id="results"></div>
   <div id="debugPanel"></div>
+<div id="boardWrapper">
+  <div id="topLabels">
+    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+  </div>
 
+  <div id="leftLabels">
+    <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span>
+  </div>
+
+  <div id="board"></div>
+</div>
   <div id="board"></div>
   <div id="winMessage" style="margin-top:10px; font-size:20px; font-weight:bold; height: 30px;line-height: 30px;text-align: center;"></div>
 
@@ -248,7 +283,7 @@ threeL: {
           const cell = document.createElement("div");
           cell.className = "cell";
           cell.id = rows[r] + cols[c];
-          cell.innerText = rows[r] + cols[c];
+          cell.innerText = "";
           board.appendChild(cell);
         }
       }
