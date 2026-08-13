@@ -155,7 +155,9 @@
 
 <body>
   <h1>Square Puzzle</h1>
-  <button onclick="rollAll()">Start Game (Set new Barriers)🎲</button>
+  <div id="timerDisplay">0.0s</div>
+  <button onclick="rollAll()">Start Game (Set random Barriers)🎲</button>
+  
 
   <div id="results"></div>
  <div id="debugPanel" style="display:none;"></div>
@@ -274,7 +276,32 @@ threeL: {
     const rows = ["A","B","C","D","E","F"];
     const cols = ["1","2","3","4","5","6"];
     
-
+let timer = 0;            // milliseconds
+let timerInterval = null; // setInterval handle
+let timerRunning = false; // prevents double-start
+    function updateTimerDisplay() {
+    const seconds = (timer / 1000).toFixed(1);
+    document.getElementById("timerDisplay").textContent = `${seconds}s`;
+}
+    function startTimer() {
+    if (!timerRunning) {
+        timerRunning = true;
+        timerInterval = setInterval(() => {
+            timer += 100; // update every 0.1s
+            updateTimerDisplay();
+        }, 100);
+    }
+}
+    function resetTimer() {
+    clearInterval(timerInterval);
+    timer = 0;
+    timerRunning = false;
+    updateTimerDisplay();
+}
+    function stopTimer() {
+    clearInterval(timerInterval);
+    timerRunning = false;
+}
     function buildBoard() {
       const board = document.getElementById("board");
       board.innerHTML = "";
@@ -526,6 +553,8 @@ function isValidPlacement(coords,piece) {
 
       document.getElementById("results").innerHTML = html;
       updateDebugPanel();
+      resetTimer();
+      startTimer();
     }
 
   function checkWinCondition() {
@@ -567,6 +596,7 @@ function isValidPlacement(coords,piece) {
   }
 
   document.getElementById("winMessage").textContent = "🎉 You solved it!";
+    stopTimer();
   gameOver = true;
   return true;
 }
