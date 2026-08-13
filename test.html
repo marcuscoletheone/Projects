@@ -45,14 +45,14 @@
       transition: background 0.2s, transform 0.2s;
     }
 
-    . {
+    .highlight {
       background: #ffe066;
       border-color: #ffcc33;
       transform: translateY(-3px);
       box-shadow: 0 3px 6px rgba(0,0,0,0.2);
       font-weight: bold;
     }
-    . {
+    .hover {
   background: #c7ff8a;
   border-color: #8cd95b;
   transform: translateY(-2px);
@@ -71,7 +71,7 @@
       transition: background 0.2s;
     }
 
-    button: {
+    button:hover {
       background: #3b5a85;
     }
 
@@ -295,7 +295,7 @@ function snapPieceToGrid(piece) {
   piece.style.top  = (snappedTop  - parentRect.top) + "px";
 }
 function highlightHoveredSquares(coords) {
-  // Remove old  highlights
+  // Remove old hover highlights
   document.querySelectorAll(".cell").forEach(cell => {
     cell.classList.remove("hover");
   });
@@ -367,7 +367,7 @@ function enablePieceInteraction(piece) {
 
       const { coords } = getPieceBoardCoords(piece);
 
-      //highlightHoveredSquares(coords);   // NEW
+      highlightHoveredSquares(coords);   // NEW
 
       updateDebugPanel();
       checkWinCondition();
