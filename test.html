@@ -294,17 +294,22 @@ function snapPieceToGrid(piece) {
   piece.style.left = (snappedLeft - parentRect.left) + "px";
   piece.style.top  = (snappedTop  - parentRect.top) + "px";
 }
-function highlightHoveredSquares(coords) {
+function highlightHoveredSquares(coords, piece) {
   // Remove old hover highlights
   document.querySelectorAll(".cell").forEach(cell => {
     cell.classList.remove("hover");
+    cell.style.background = "";   // reset background
   });
+
+  const shape = shapes[piece.dataset.shape];
+  const color = shape.colors[0];
 
   coords.forEach(([r, c]) => {
     if (r >= 0 && r < 6 && c >= 0 && c < 6) {
       const cell = document.getElementById(`${String.fromCharCode(65+r)}${c+1}`);
       if (!cell.classList.contains("barrier")) {
         cell.classList.add("hover");
+        cell.style.background = color;   // match piece color
       }
     }
   });
@@ -367,7 +372,7 @@ function enablePieceInteraction(piece) {
 
       const { coords } = getPieceBoardCoords(piece);
 
-      highlightHoveredSquares(coords);   // NEW
+      highlightHoveredSquares(coords, piece);   // NEW
 
       updateDebugPanel();
       checkWinCondition();
@@ -381,6 +386,7 @@ function enablePieceInteraction(piece) {
   // Clear hover highlights
   document.querySelectorAll(".cell").forEach(cell => {
     cell.classList.remove("hover");
+    cell.style.background = "";
   });
 
   const { coords } = getPieceBoardCoords(piece);
