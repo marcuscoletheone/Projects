@@ -298,18 +298,19 @@ function highlightHoveredSquares(coords, piece) {
   // Remove old hover highlights
   document.querySelectorAll(".cell").forEach(cell => {
     cell.classList.remove("hover");
-    cell.style.background = "";   // reset background
+    cell.style.background = "";
   });
 
   const shape = shapes[piece.dataset.shape];
-  const color = shape.colors[0];
+  const baseColor = shape.colors[0];
+  const hoverColor = lightenColor(baseColor, 0.55); // 55% lighter
 
   coords.forEach(([r, c]) => {
     if (r >= 0 && r < 6 && c >= 0 && c < 6) {
       const cell = document.getElementById(`${String.fromCharCode(65+r)}${c+1}`);
       if (!cell.classList.contains("barrier")) {
         cell.classList.add("hover");
-        cell.style.background = color;   // match piece color
+        cell.style.background = hoverColor;
       }
     }
   });
@@ -411,7 +412,18 @@ function enablePieceInteraction(piece) {
     checkWinCondition();
   });
 }
+function lightenColor(hex, amount = 0.5) {
+  const num = parseInt(hex.slice(1), 16);
+  let r = (num >> 16) & 255;
+  let g = (num >> 8) & 255;
+  let b = num & 255;
 
+  r = Math.round(r + (255 - r) * amount);
+  g = Math.round(g + (255 - g) * amount);
+  b = Math.round(b + (255 - b) * amount);
+
+  return `rgb(${r}, ${g}, ${b})`;
+}
 function rotatePiece(piece) {
   const shape = shapes[piece.dataset.shape];
   let rot = parseInt(piece.dataset.rotation);
