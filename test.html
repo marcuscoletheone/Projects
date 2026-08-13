@@ -139,6 +139,7 @@
 
 <div id="toolbox"></div>
   <script>
+    let gameOver = false;
     const shapes = {
   one: {
     rotations: [[[0,0]]],
@@ -237,6 +238,7 @@ threeL: {
 
     const rows = ["A","B","C","D","E","F"];
     const cols = ["1","2","3","4","5","6"];
+    
 
     function buildBoard() {
       const board = document.getElementById("board");
@@ -353,6 +355,7 @@ function enablePieceInteraction(piece) {
   let dragging = false;
 
   piece.addEventListener("pointerdown", e => {
+    if (gameOver) return;
     dragging = false; // reset
     startX = e.clientX - piece.offsetLeft;
     startY = e.clientY - piece.offsetTop;
@@ -371,7 +374,7 @@ function enablePieceInteraction(piece) {
       highlightHoveredSquares(coords, piece);   // NEW
 
       updateDebugPanel();
-      checkWinCondition();
+     
     };
 
     piece.onpointerup = ev => {
@@ -472,6 +475,7 @@ function isValidPlacement(coords,piece) {
       buildToolboxLayout();
       clearHighlights();
       document.getElementById("winMessage").textContent = "";
+      gameOver = false;
       document.querySelectorAll(".barrier").forEach(cell => {
   cell.classList.remove("barrier", "highlight");
 });
@@ -528,6 +532,7 @@ function isValidPlacement(coords,piece) {
   }
 
   document.getElementById("winMessage").textContent = "🎉 You solved it!";
+  gameOver = true;
   return true;
 }
     function updateDebugPanel() {
