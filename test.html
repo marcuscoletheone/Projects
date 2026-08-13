@@ -111,7 +111,7 @@
 }
 
     .piece.lifted {
-  transform: translateY(-5px) scale(1.05);
+  transform: translateY(-20px) scale(1.15);
   z-index: 9999;
 }
 
@@ -360,10 +360,11 @@ function enablePieceInteraction(piece) {
     piece.classList.add("lifted");
 
     piece.onpointermove = ev => {
+      dragging = true;
       const x = ev.clientX - startX;
       const y = ev.clientY - startY;
       piece.style.left = x + "px";
-      piece.style.top = y + "px";
+      piece.style.top = (y - 200) + "px";
 
       const { coords } = getPieceBoardCoords(piece);
 
