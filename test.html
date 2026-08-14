@@ -338,31 +338,59 @@ function showPuzzleSelect(page = 1) {
     const startIndex = (page - 1) * puzzlesPerPage;
     const endIndex = Math.min(startIndex + puzzlesPerPage, allPuzzles.length);
 
+    // Make container a 5×5 grid
+    container.style.display = "grid";
+    container.style.gridTemplateColumns = "repeat(5, 1fr)";
+    container.style.gap = "12px";
+
     for (let i = startIndex; i < endIndex; i++) {
         const puzzleNum = i + 1;
         const progress = puzzleProgress[puzzleNum];
 
         const btn = document.createElement("button");
+        btn.style.width = "100px";
+        btn.style.height = "100px";
+        btn.style.display = "flex";
+        btn.style.flexDirection = "column";
+        btn.style.justifyContent = "center";
+        btn.style.alignItems = "center";
+        btn.style.fontSize = "18px";
+        btn.style.borderRadius = "10px";
 
-        // Build label
-        let label = `Puzzle ${puzzleNum}`;
+        // Label top: "#37"
+        let topLabel = `#${puzzleNum}`;
 
+        // Checkmark if solved
+        let check = progress?.solved ? "✓" : "";
+
+        // Time below
+        let timeLabel = progress?.solved
+            ? formatTime(progress.bestTime)
+            : "00.0s";
+
+        // Color solved puzzles
         if (progress?.solved) {
-            label += ` ✓ (${formatTime(progress.bestTime)})`;
-            btn.style.background = "#4caf50";      // green for solved
+            btn.style.background = "#4caf50";
             btn.style.color = "white";
+        } else {
+            btn.style.background = "#e0e0e0";
+            btn.style.color = "#333";
         }
 
-        btn.textContent = label;
-        btn.style.margin = "8px";
+        btn.innerHTML = `
+            <div style="font-size:22px; font-weight:bold;">${topLabel} ${check}</div>
+            <div style="font-size:16px; margin-top:6px;">${timeLabel}</div>
+        `;
+
         btn.onclick = () => loadPuzzle(puzzleNum);
 
         container.appendChild(btn);
     }
 
-    // --- Page navigation ---
+    // --- Navigation + Reset ---
     const nav = document.createElement("div");
     nav.style.marginTop = "20px";
+    nav.style.textAlign = "center";
 
     if (page > 1) {
         const prev = document.createElement("button");
@@ -380,7 +408,7 @@ function showPuzzleSelect(page = 1) {
         nav.appendChild(next);
     }
 
-    // --- Reset Progress Button ---
+    // Reset button
     const resetBtn = document.createElement("button");
     resetBtn.textContent = "Reset All Progress";
     resetBtn.style.margin = "8px";
@@ -392,7 +420,7 @@ function showPuzzleSelect(page = 1) {
     container.appendChild(nav);
 
     document.getElementById("puzzleOverlay").style.display = "flex";
-}
+
     function loadPuzzle(num) {
     currentPuzzle = num;
     document.getElementById("puzzleOverlay").style.display = "none";
