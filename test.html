@@ -225,6 +225,7 @@
     // Load the full shuffled puzzle list
     const allPuzzles = JSON.parse(localStorage.getItem("allPuzzles"));
 
+
 // Safety check
 if (!allPuzzles || !Array.isArray(allPuzzles)) {
     alert("Puzzle list not found. Please run the generator page first.");
@@ -331,7 +332,7 @@ threeL: {
 let timer = 0;            // milliseconds
 let timerInterval = null; // setInterval handle
 let timerRunning = false; // prevents double-start
-    function resetAllProgress() {
+function resetAllProgress() {
     if (!confirm("Reset ALL puzzle progress?")) return;
 
     puzzleProgress = {};
@@ -420,7 +421,7 @@ function showPuzzleSelect(page = 1) {
 
     document.getElementById("puzzleOverlay").style.display = "flex";
 }
-    function loadPuzzle(num) {
+function loadPuzzle(num) {
     currentPuzzle = num;
     document.getElementById("puzzleOverlay").style.display = "none";
     // Show puzzle number
@@ -458,10 +459,10 @@ function showPuzzleSelect(page = 1) {
     resetTimer();
     startTimer();
 }
-    function closePuzzleOverlay() {
+function closePuzzleOverlay() {
     document.getElementById("puzzleOverlay").style.display = "none";
 }
-  function updateTimerDisplay() {
+function updateTimerDisplay() {
     const totalSeconds = Math.floor(timer / 1000);
 
     if (totalSeconds < 60) {
@@ -478,7 +479,7 @@ function showPuzzleSelect(page = 1) {
     const formatted = `${minutes}m ${seconds.toString().padStart(2, "0")}s`;
     document.getElementById("timerDisplay").textContent = formatted;
 }
-    function startTimer() {
+function startTimer() {
     if (!timerRunning) {
         timerRunning = true;
         timerInterval = setInterval(() => {
@@ -487,17 +488,17 @@ function showPuzzleSelect(page = 1) {
         }, 100);
     }
 }
-    function resetTimer() {
+function resetTimer() {
     clearInterval(timerInterval);
     timer = 0;
     timerRunning = false;
     updateTimerDisplay();
 }
-    function stopTimer() {
+function stopTimer() {
     clearInterval(timerInterval);
     timerRunning = false;
 }
-    function buildBoard() {
+function buildBoard() {
       const board = document.getElementById("board");
       board.innerHTML = "";
       for (let r = 0; r < 6; r++) {
@@ -510,7 +511,7 @@ function showPuzzleSelect(page = 1) {
         }
       }
     }
-    function isSquareOccupied(row, col, exceptPiece = null) {
+function isSquareOccupied(row, col, exceptPiece = null) {
   const pieces = document.querySelectorAll(".piece");
 
   for (const piece of pieces) {
@@ -534,6 +535,7 @@ function showPuzzleSelect(page = 1) {
 
   return false;
 }
+    
 function snapPieceToGrid(piece) {
   const boardRect = document.getElementById("board").getBoundingClientRect();
   const parentRect = piece.offsetParent.getBoundingClientRect();
@@ -547,6 +549,7 @@ function snapPieceToGrid(piece) {
   piece.style.left = (snappedLeft - parentRect.left) + "px";
   piece.style.top  = (snappedTop  - parentRect.top) + "px";
 }
+    
 function highlightHoveredSquares(coords, piece) {
   // Remove old hover highlights
   document.querySelectorAll(".cell").forEach(cell => {
@@ -607,6 +610,7 @@ function buildToolboxLayout() {
   });
 }
 buildToolboxLayout();
+    
 function enablePieceInteraction(piece) {
   let startX, startY;
   let dragging = false;
@@ -667,6 +671,7 @@ function enablePieceInteraction(piece) {
     checkWinCondition();
   });
 }
+    
 function lightenColor(hex, amount = 0.5) {
   const num = parseInt(hex.slice(1), 16);
   let r = (num >> 16) & 255;
@@ -679,6 +684,7 @@ function lightenColor(hex, amount = 0.5) {
 
   return `rgb(${r}, ${g}, ${b})`;
 }
+    
 function rotatePiece(piece) {
   const shape = shapes[piece.dataset.shape];
   let rot = parseInt(piece.dataset.rotation);
@@ -722,13 +728,13 @@ function isValidPlacement(coords,piece) {
   return true;
 }
 
-    function clearHighlights() {
+function clearHighlights() {
       document.querySelectorAll(".cell").forEach(cell => {
         cell.classList.remove("highlight");
       });
     }
 
-    function rollAll() {
+function rollAll() {
       buildToolboxLayout();
       clearHighlights();
       document.getElementById("winMessage").textContent = "";
@@ -763,11 +769,11 @@ function recordPuzzleWin(puzzleNumber, timeMs) {
     localStorage.setItem("puzzleProgress", JSON.stringify(puzzleProgress));
 }
 
-    function savePuzzleProgress() {
+function savePuzzleProgress() {
     localStorage.setItem("puzzleProgress", JSON.stringify(puzzleProgress));
 }
     
-  function checkWinCondition() {
+function checkWinCondition() {
   const boardRect = document.getElementById("board").getBoundingClientRect();
   const pieces = document.querySelectorAll(".piece");
   const padding = 20;
@@ -831,7 +837,7 @@ function recordPuzzleWin(puzzleNumber, timeMs) {
 
   return true;
 }
-    function formatTime(ms) {
+function formatTime(ms) {
     const totalSeconds = Math.floor(ms / 1000);
 
     if (totalSeconds < 60) {
@@ -843,7 +849,7 @@ function recordPuzzleWin(puzzleNumber, timeMs) {
 
     return `${minutes}m ${seconds.toString().padStart(2, "0")}s`;
 }
-    function updateDebugPanel() {
+function updateDebugPanel() {
   const boardRect = document.getElementById("board").getBoundingClientRect();
   const pieces = document.querySelectorAll(".piece");
   const padding = 20; // board padding
@@ -890,6 +896,9 @@ function recordPuzzleWin(puzzleNumber, timeMs) {
 }
 
     buildBoard();
+window.addEventListener("load", () => {
+    showPuzzleSelect();
+});
   </script>
 </body>
 </html>
