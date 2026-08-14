@@ -322,18 +322,46 @@ threeL: {
 let timer = 0;            // milliseconds
 let timerInterval = null; // setInterval handle
 let timerRunning = false; // prevents double-start
-    function showPuzzleSelect() {
+function showPuzzleSelect(page = 1) {
     const container = document.getElementById("puzzleButtons");
     container.innerHTML = ""; // clear old buttons
 
-    for (let i = 1; i <= 25; i++) {
+    const puzzlesPerPage = 25;
+    const startIndex = (page - 1) * puzzlesPerPage;
+    const endIndex = Math.min(startIndex + puzzlesPerPage, allPuzzles.length);
+
+    // --- Build puzzle buttons ---
+    for (let i = startIndex; i < endIndex; i++) {
         const btn = document.createElement("button");
-        btn.textContent = `Puzzle ${i}`;
+        btn.textContent = `Puzzle ${i + 1}`;
         btn.style.margin = "8px";
-        btn.onclick = () => loadPuzzle(i);
+        btn.onclick = () => loadPuzzle(i + 1);
         container.appendChild(btn);
     }
 
+    // --- Page navigation ---
+    const nav = document.createElement("div");
+    nav.style.marginTop = "20px";
+
+    if (page > 1) {
+        const prev = document.createElement("button");
+        prev.textContent = "Previous Page";
+        prev.style.margin = "8px";
+        prev.onclick = () => showPuzzleSelect(page - 1);
+        nav.appendChild(prev);
+    }
+
+    if (endIndex < allPuzzles.length) {
+        const next = document.createElement("button");
+        next.textContent = "Next Page";
+        next.style.margin = "8px";
+        next.onclick = () => showPuzzleSelect(page + 1);
+        nav.appendChild(next);
+    }
+
+    container.appendChild(nav);
+
+    // Show overlay
     document.getElementById("puzzleOverlay").style.display = "flex";
 }
     function loadPuzzle(num) {
