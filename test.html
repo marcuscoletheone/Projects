@@ -184,7 +184,11 @@
   <div id="puzzleOverlay">
     <div id="puzzlePanel">
         <h2>Select a Puzzle</h2>
+
         <div id="puzzleButtons"></div>
+
+        <div id="puzzleNavBar"></div>   <!-- NEW: navigation + reset buttons -->
+
         <button onclick="closePuzzleOverlay()">Close</button>
     </div>
 </div>
@@ -380,11 +384,13 @@ function showPuzzleSelect(page = 1) {
     }
 
     // --- SEPARATE NAVIGATION BAR (NOT IN GRID) ---
-    const navBar = document.createElement("div");
+    const navBar = document.getElementById("puzzleNavBar");
+    navBar.innerHTML = ""; // clear old nav buttons
+
     navBar.style.display = "flex";
     navBar.style.justifyContent = "center";
     navBar.style.gap = "12px";
-    navBar.style.marginTop = "20px";
+    navBar.style.margin = "20px 0";
 
     if (page > 1) {
         const prev = document.createElement("button");
@@ -406,9 +412,6 @@ function showPuzzleSelect(page = 1) {
     resetBtn.style.color = "white";
     resetBtn.onclick = resetAllProgress;
     navBar.appendChild(resetBtn);
-
-    // Append navigation bar AFTER the grid
-    container.appendChild(navBar);
 
     document.getElementById("puzzleOverlay").style.display = "flex";
 }
