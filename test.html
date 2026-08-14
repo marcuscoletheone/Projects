@@ -210,7 +210,9 @@
 
 <div id="toolbox"></div>
   <script>
+    let currentPuzzle = null
     let gameOver = false;
+    let puzzleProgress = JSON.parse(localStorage.getItem("puzzleProgress") || "{}");
     const shapes = {
   one: {
     rotations: [[[0,0]]],
@@ -328,6 +330,7 @@ let timerRunning = false; // prevents double-start
     document.getElementById("puzzleOverlay").style.display = "flex";
 }
     function loadPuzzle(num) {
+      currentPuzzle = num;
     document.getElementById("puzzleOverlay").style.display = "none";
 
     // Later: load fixed dice roll for puzzle num
@@ -627,12 +630,26 @@ function isValidPlacement(coords,piece) {
       startTimer();
     }
 
+
+function recordPuzzleWin(puzzleNumber, timeMs) {
+    const prev = puzzleProgress[puzzleNumber];
+
+    if (!prev || timeMs < prev.bestTime) {
+        puzzleProgress[puzzleNumber] = { solved: true, bestTime: timeMs };
+    }
+
+    localStorage.setItem("puzzleProgress", JSON.stringify(puzzleProgress));
+}
+
+    function savePuzzleProgress() {
+    localStorage.setItem("puzzleProgress", JSON.stringify(puzzleProgress));
+}
+    
   function checkWinCondition() {
   const boardRect = document.getElementById("board").getBoundingClientRect();
   const pieces = document.querySelectorAll(".piece");
-  const padding = 20; // IMPORTANT FIX
+  const padding = 20;
 
-  // Track coverage
   const covered = new Set();
 
   pieces.forEach(piece => {
@@ -659,15 +676,37 @@ function isValidPlacement(coords,piece) {
       const cell = document.getElementById(`${String.fromCharCode(65+r)}${c+1}`);
       if (!cell.classList.contains("barrier")) {
         if (!covered.has(`${r},${c}`)) {
-          return false; // not yet solved
+          return false;
         }
       }
     }
   }
 
-  document.getElementById("winMessage").textContent = "🎉 You solved it!";
-    stopTimer();
+  // --- WIN DETECTED ---
+  stopTimer();
   gameOver = true;
+
+  const timeMs = timer;
+  const best = puzzleProgress[currentPuzzle]?.bestTime;
+
+  // Save best time
+  if (!best || timeMs < best) {
+    puzzleProgress[currentPuzzle] = {
+      solved: true,
+      bestTime: timeMs
+    };
+    savePuzzleProgress();
+  }
+
+  // Show win screen
+  const win = document.getElementById("winMessage");
+  win.innerHTML = `
+    🎉 Puzzle ${currentPuzzle} Complete!<br>
+    Time: ${formatTime(timeMs)}<br><br>
+    <button onclick="loadPuzzle(${currentPuzzle + 1})">Next Puzzle</button>
+    <button onclick="showPuzzleSelect()">Select Puzzle</button>
+  `;
+
   return true;
 }
     function updateDebugPanel() {
