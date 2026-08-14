@@ -188,10 +188,7 @@
         <button onclick="closePuzzleOverlay()">Close</button>
     </div>
 </div>
-  <div id="puzzleSelect" style="display:none; margin-top:20px;">
-  <h2>Select a Puzzle</h2>
-  <div id="puzzleButtons"></div>
-</div>
+
   <div id="timerDisplay">0.0s</div>
   <button onclick="rollAll()">Start Game (Set random Barriers)🎲</button>
   
@@ -328,15 +325,16 @@ let timerRunning = false; // prevents double-start
         container.appendChild(btn);
     }
 
-    document.getElementById("puzzleSelect").style.display = "block";
+    document.getElementById("puzzleOverlay").style.display = "flex";
 }
     function loadPuzzle(num) {
-    document.getElementById("puzzleSelect").style.display = "none";
-    document.getElementById("boardWrapper").style.display = "block";
-    document.getElementById("toolbox").style.display = "block";
+    document.getElementById("puzzleOverlay").style.display = "none";
 
     // Later: load fixed dice roll for puzzle num
     rollAll();
+}
+    function closePuzzleOverlay() {
+    document.getElementById("puzzleOverlay").style.display = "none";
 }
   function updateTimerDisplay() {
     const totalSeconds = Math.floor(timer / 1000);
