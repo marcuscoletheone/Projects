@@ -340,6 +340,24 @@ function resetAllProgress() {
 
     showPuzzleSelect(); // refresh menu
 }
+
+function jumpToFirstUnsolved() {
+    const total = allPuzzles.length;
+
+    for (let i = 1; i <= total; i++) {
+        const progress = puzzleProgress[i];
+        if (!progress || !progress.solved) {
+            // Found the first unsolved puzzle
+            const puzzlesPerPage = 25;
+            const page = Math.ceil(i / puzzlesPerPage);
+            showPuzzleSelect(page);
+            return;
+        }
+    }
+
+    // If all puzzles are solved
+    alert("All puzzles solved!");
+}
 function showPuzzleSelect(page = 1) {
     const container = document.getElementById("puzzleButtons");
     container.innerHTML = ""; 
@@ -400,18 +418,21 @@ function showPuzzleSelect(page = 1) {
 
     if (page > 1) {
         const prev = document.createElement("button");
-        prev.textContent = "Previous Page";
+        prev.textContent = "<< Prev";
         prev.onclick = () => showPuzzleSelect(page - 1);
         navBar.appendChild(prev);
     }
 
     if (endIndex < allPuzzles.length) {
         const next = document.createElement("button");
-        next.textContent = "Next Page";
+        next.textContent = "Next >>";
         next.onclick = () => showPuzzleSelect(page + 1);
         navBar.appendChild(next);
     }
-
+    const jumpBtn = document.createElement("button");
+    jumpBtn.textContent = "First Unsolved >>";
+    jumpBtn.onclick = jumpToFirstUnsolved;
+    navBar.appendChild(jumpBtn);
     const resetBtn = document.createElement("button");
     resetBtn.textContent = "Reset All Progress";
     resetBtn.style.background = "#b71c1c";
