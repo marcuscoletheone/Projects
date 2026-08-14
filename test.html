@@ -213,6 +213,13 @@
     let currentPuzzle = null
     let gameOver = false;
     let puzzleProgress = JSON.parse(localStorage.getItem("puzzleProgress") || "{}");
+    // Load the full shuffled puzzle list
+    const allPuzzles = JSON.parse(localStorage.getItem("allPuzzles"));
+
+// Safety check
+if (!allPuzzles || !Array.isArray(allPuzzles)) {
+    alert("Puzzle list not found. Please run the generator page first.");
+}
     const shapes = {
   one: {
     rotations: [[[0,0]]],
@@ -330,11 +337,39 @@ let timerRunning = false; // prevents double-start
     document.getElementById("puzzleOverlay").style.display = "flex";
 }
     function loadPuzzle(num) {
-      currentPuzzle = num;
+    currentPuzzle = num;
     document.getElementById("puzzleOverlay").style.display = "none";
 
-    // Later: load fixed dice roll for puzzle num
-    rollAll();
+    // --- RESET GAME STATE ---
+    gameOver = false;
+    document.getElementById("winMessage").textContent = "";
+
+    // Clear old barriers + highlights
+    document.querySelectorAll(".barrier").forEach(cell => {
+        cell.classList.remove("barrier", "highlight");
+    });
+
+    clearHighlights();
+
+    // Reset timer
+    resetTimer();
+    startTimer();
+
+    // Rebuild toolbox (fresh pieces)
+    buildToolboxLayout();
+
+    // --- LOAD PUZZLE SIGNATURE ---
+    const signature = allPuzzles[num - 1];  // Level 1 = index 0
+    const coords = signature.split(",");
+
+    // Place barriers
+    coords.forEach(coord => {
+        const cell = document.getElementById(coord);
+        if (cell) cell.classList.add("barrier");
+    });
+
+    // Update debug panel
+    updateDebugPanel();
 }
     function closePuzzleOverlay() {
     document.getElementById("puzzleOverlay").style.display = "none";
