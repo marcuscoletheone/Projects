@@ -157,12 +157,37 @@
     inset 0 -4px 6px rgba(0,0,0,0.25),
     0 4px 8px rgba(0,0,0,0.25);
 }
+    #puzzleOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#puzzlePanel {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    width: 80%;
+    max-width: 600px;
+    text-align: center;
+}
   </style>
 </head>
 
 <body>
   <h1>Square Puzzle</h1>
   <button onclick="showPuzzleSelect()">Puzzle Selection</button>
+  <div id="puzzleOverlay">
+    <div id="puzzlePanel">
+        <h2>Select a Puzzle</h2>
+        <div id="puzzleButtons"></div>
+        <button onclick="closePuzzleOverlay()">Close</button>
+    </div>
+</div>
   <div id="puzzleSelect" style="display:none; margin-top:20px;">
   <h2>Select a Puzzle</h2>
   <div id="puzzleButtons"></div>
@@ -304,8 +329,6 @@ let timerRunning = false; // prevents double-start
     }
 
     document.getElementById("puzzleSelect").style.display = "block";
-    document.getElementById("boardWrapper").style.display = "none";
-    document.getElementById("toolbox").style.display = "none";
 }
     function loadPuzzle(num) {
     document.getElementById("puzzleSelect").style.display = "none";
