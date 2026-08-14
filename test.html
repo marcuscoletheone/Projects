@@ -437,7 +437,7 @@ function showPuzzleSelect(page = 1) {
 
     // Clear old barriers
     document.querySelectorAll(".barrier").forEach(cell => {
-        cell.classList.remove("barrier", "highlight");
+        cell.classList.remove("barrier");
     });
 
     // --- LOAD PUZZLE SIGNATURE ---
@@ -449,7 +449,7 @@ function showPuzzleSelect(page = 1) {
     coords.forEach(coord => {
         html += `<div class="die"><strong>Barrier:</strong> ${coord}</div>`;
         const cell = document.getElementById(coord);
-        if (cell) cell.classList.add("highlight", "barrier");   // SAME AS rollAll()
+        if (cell) cell.classList.add( "barrier");   // SAME AS rollAll()
     });
 
     document.getElementById("results").innerHTML = html;
@@ -734,7 +734,7 @@ function isValidPlacement(coords,piece) {
       document.getElementById("winMessage").textContent = "";
       gameOver = false;
       document.querySelectorAll(".barrier").forEach(cell => {
-  cell.classList.remove("barrier", "highlight");
+  cell.classList.remove("barrier");
 });
 
       let html = "";
@@ -743,7 +743,7 @@ function isValidPlacement(coords,piece) {
         html += `<div class="die"><strong>${die.name}:</strong> ${value}</div>`;
 
         const cell = document.getElementById(value);
-        if (cell) cell.classList.add("highlight", "barrier");
+        if (cell) cell.classList.add("barrier");
       });
 
       document.getElementById("results").innerHTML = html;
