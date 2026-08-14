@@ -53,15 +53,16 @@ function generateSignatures() {
       }
     }
   }
-
+  
   const uniqueList = Array.from(signatures);
+  uniqueList.sort(() => Math.random() - 0.5);
 
   // Save to localStorage
   localStorage.setItem("allPuzzles", JSON.stringify(uniqueList));
 
   document.getElementById("output").textContent =
     "Total unique puzzles: " + uniqueList.length +
-    "\n\nExample:\n" + uniqueList.slice(0, 20).join("\n");
+    "\n\nExample:\n" + uniqueList.slice(0, 100).join("\n");
 }
 
 generateSignatures();
