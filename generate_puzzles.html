@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Generate Puzzle Signatures</title>
+</head>
+<body>
+  <h1>Generating Unique Puzzle Signatures...</h1>
+  <pre id="output"></pre>
+
+<script>
+const dice = [
+  { faces: ["F2", "A5", "E1", "B6"] },
+  { faces: ["F6", "A4", "D6", "C5", "C6", "B5"] },
+  { faces: ["B2", "B1", "A3", "A2", "C2", "B3"] },
+  { faces: ["D4", "B4", "E3", "C4", "C3", "D3"] },
+  { faces: ["E6", "E5", "E4", "D5", "F5", "F4"] },
+  { faces: ["C1", "A1", "D2", "D1", "F3", "E2"] },
+  { faces: ["F1", "A6"] }
+];
+
+const signatures = new Set();
+
+function generateSignatures() {
+  for (let a = 0; a < dice[0].faces.length; a++) {
+    for (let b = 0; b < dice[1].faces.length; b++) {
+      for (let c = 0; c < dice[2].faces.length; c++) {
+        for (let d = 0; d < dice[3].faces.length; d++) {
+          for (let e = 0; e < dice[4].faces.length; e++) {
+            for (let f = 0; f < dice[5].faces.length; f++) {
+              for (let g = 0; g < dice[6].faces.length; g++) {
+
+                const coords = [
+                  dice[0].faces[a],
+                  dice[1].faces[b],
+                  dice[2].faces[c],
+                  dice[3].faces[d],
+                  dice[4].faces[e],
+                  dice[5].faces[f],
+                  dice[6].faces[g]
+                ];
+
+                const signature = coords.slice().sort().join(",");
+                signatures.add(signature);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  const uniqueList = Array.from(signatures);
+
+  // Save to localStorage
+  localStorage.setItem("allPuzzles", JSON.stringify(uniqueList));
+
+  document.getElementById("output").textContent =
+    "Total unique puzzles: " + uniqueList.length +
+    "\n\nExample:\n" + uniqueList.slice(0, 20).join("\n");
+}
+
+generateSignatures();
+</script>
+</body>
+</html>
