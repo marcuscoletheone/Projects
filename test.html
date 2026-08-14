@@ -332,13 +332,13 @@ let timerRunning = false; // prevents double-start
 }
 function showPuzzleSelect(page = 1) {
     const container = document.getElementById("puzzleButtons");
-    container.innerHTML = ""; // clear old buttons
+    container.innerHTML = ""; 
 
     const puzzlesPerPage = 25;
     const startIndex = (page - 1) * puzzlesPerPage;
     const endIndex = Math.min(startIndex + puzzlesPerPage, allPuzzles.length);
 
-    // Make container a 5×5 grid
+    // --- 5×5 GRID FOR PUZZLES ---
     container.style.display = "grid";
     container.style.gridTemplateColumns = "repeat(5, 1fr)";
     container.style.gap = "12px";
@@ -357,18 +357,10 @@ function showPuzzleSelect(page = 1) {
         btn.style.fontSize = "18px";
         btn.style.borderRadius = "10px";
 
-        // Label top: "#37"
-        let topLabel = `#${puzzleNum}`;
+        const topLabel = `#${puzzleNum}`;
+        const check = progress?.solved ? "✓" : "";
+        const timeLabel = progress?.solved ? formatTime(progress.bestTime) : "00.0s";
 
-        // Checkmark if solved
-        let check = progress?.solved ? "✓" : "";
-
-        // Time below
-        let timeLabel = progress?.solved
-            ? formatTime(progress.bestTime)
-            : "00.0s";
-
-        // Color solved puzzles
         if (progress?.solved) {
             btn.style.background = "#4caf50";
             btn.style.color = "white";
@@ -387,37 +379,36 @@ function showPuzzleSelect(page = 1) {
         container.appendChild(btn);
     }
 
-    // --- Navigation + Reset ---
-    const nav = document.createElement("div");
-    nav.style.marginTop = "20px";
-    nav.style.textAlign = "center";
+    // --- SEPARATE NAVIGATION BAR (NOT IN GRID) ---
+    const navBar = document.createElement("div");
+    navBar.style.display = "flex";
+    navBar.style.justifyContent = "center";
+    navBar.style.gap = "12px";
+    navBar.style.marginTop = "20px";
 
     if (page > 1) {
         const prev = document.createElement("button");
         prev.textContent = "Previous Page";
-        prev.style.margin = "8px";
         prev.onclick = () => showPuzzleSelect(page - 1);
-        nav.appendChild(prev);
+        navBar.appendChild(prev);
     }
 
     if (endIndex < allPuzzles.length) {
         const next = document.createElement("button");
         next.textContent = "Next Page";
-        next.style.margin = "8px";
         next.onclick = () => showPuzzleSelect(page + 1);
-        nav.appendChild(next);
+        navBar.appendChild(next);
     }
 
-    // Reset button
     const resetBtn = document.createElement("button");
     resetBtn.textContent = "Reset All Progress";
-    resetBtn.style.margin = "8px";
     resetBtn.style.background = "#b71c1c";
     resetBtn.style.color = "white";
     resetBtn.onclick = resetAllProgress;
-    nav.appendChild(resetBtn);
+    navBar.appendChild(resetBtn);
 
-    container.appendChild(nav);
+    // Append navigation bar AFTER the grid
+    container.appendChild(navBar);
 
     document.getElementById("puzzleOverlay").style.display = "flex";
 }
