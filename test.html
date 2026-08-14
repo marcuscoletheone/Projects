@@ -322,6 +322,14 @@ threeL: {
 let timer = 0;            // milliseconds
 let timerInterval = null; // setInterval handle
 let timerRunning = false; // prevents double-start
+    function resetAllProgress() {
+    if (!confirm("Reset ALL puzzle progress?")) return;
+
+    puzzleProgress = {};
+    localStorage.removeItem("puzzleProgress");
+
+    showPuzzleSelect(); // refresh menu
+}
 function showPuzzleSelect(page = 1) {
     const container = document.getElementById("puzzleButtons");
     container.innerHTML = ""; // clear old buttons
@@ -330,12 +338,25 @@ function showPuzzleSelect(page = 1) {
     const startIndex = (page - 1) * puzzlesPerPage;
     const endIndex = Math.min(startIndex + puzzlesPerPage, allPuzzles.length);
 
-    // --- Build puzzle buttons ---
     for (let i = startIndex; i < endIndex; i++) {
+        const puzzleNum = i + 1;
+        const progress = puzzleProgress[puzzleNum];
+
         const btn = document.createElement("button");
-        btn.textContent = `Puzzle ${i + 1}`;
+
+        // Build label
+        let label = `Puzzle ${puzzleNum}`;
+
+        if (progress?.solved) {
+            label += ` ✓ (${formatTime(progress.bestTime)})`;
+            btn.style.background = "#4caf50";      // green for solved
+            btn.style.color = "white";
+        }
+
+        btn.textContent = label;
         btn.style.margin = "8px";
-        btn.onclick = () => loadPuzzle(i + 1);
+        btn.onclick = () => loadPuzzle(puzzleNum);
+
         container.appendChild(btn);
     }
 
@@ -359,9 +380,17 @@ function showPuzzleSelect(page = 1) {
         nav.appendChild(next);
     }
 
+    // --- Reset Progress Button ---
+    const resetBtn = document.createElement("button");
+    resetBtn.textContent = "Reset All Progress";
+    resetBtn.style.margin = "8px";
+    resetBtn.style.background = "#b71c1c";
+    resetBtn.style.color = "white";
+    resetBtn.onclick = resetAllProgress;
+    nav.appendChild(resetBtn);
+
     container.appendChild(nav);
 
-    // Show overlay
     document.getElementById("puzzleOverlay").style.display = "flex";
 }
     function loadPuzzle(num) {
