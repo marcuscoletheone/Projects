@@ -709,6 +709,18 @@ function recordPuzzleWin(puzzleNumber, timeMs) {
 
   return true;
 }
+    function formatTime(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+
+    if (totalSeconds < 60) {
+        return (ms / 1000).toFixed(1) + "s";
+    }
+
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${minutes}m ${seconds.toString().padStart(2, "0")}s`;
+}
     function updateDebugPanel() {
   const boardRect = document.getElementById("board").getBoundingClientRect();
   const pieces = document.querySelectorAll(".piece");
