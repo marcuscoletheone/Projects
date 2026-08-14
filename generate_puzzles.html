@@ -62,12 +62,12 @@ function generateSignatures() {
 generateSignatures();
   <button onclick="showPuzzles()">Show Puzzle List</button>
 
-<script>
+
 function showPuzzles() {
   const data = localStorage.getItem("allPuzzles");
   document.body.innerHTML += "<pre>" + (data || "No puzzles found") + "</pre>";
 }
-</script>
+
 </script>
 </body>
 </html>
