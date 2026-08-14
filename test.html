@@ -179,7 +179,7 @@
 </head>
 
 <body>
-  <h1>Square Puzzle</h1>
+  <h1>Square Puzzle <span id="puzzleNumberHeader"></span></h1>
   <button onclick="showPuzzleSelect()">Puzzle Selection</button>
   <div id="puzzleOverlay">
     <div id="puzzlePanel">
@@ -339,37 +339,40 @@ let timerRunning = false; // prevents double-start
     function loadPuzzle(num) {
     currentPuzzle = num;
     document.getElementById("puzzleOverlay").style.display = "none";
+    // Show puzzle number
+    document.getElementById("puzzleNumberHeader").textContent = "#" + num;
+
+   
+   
 
     // --- RESET GAME STATE ---
-    gameOver = false;
+    buildToolboxLayout();                 // same as rollAll()
+    clearHighlights();                    // same as rollAll()
     document.getElementById("winMessage").textContent = "";
+    gameOver = false;
 
-    // Clear old barriers + highlights
+    // Clear old barriers
     document.querySelectorAll(".barrier").forEach(cell => {
         cell.classList.remove("barrier", "highlight");
     });
 
-    clearHighlights();
-
-    // Reset timer
-    resetTimer();
-    startTimer();
-
-    // Rebuild toolbox (fresh pieces)
-    buildToolboxLayout();
-
     // --- LOAD PUZZLE SIGNATURE ---
-    const signature = allPuzzles[num - 1];  // Level 1 = index 0
+    const signature = allPuzzles[num - 1];
     const coords = signature.split(",");
 
-    // Place barriers
+    let html = "";
+
     coords.forEach(coord => {
+        html += `<div class="die"><strong>Barrier:</strong> ${coord}</div>`;
         const cell = document.getElementById(coord);
-        if (cell) cell.classList.add("barrier");
+        if (cell) cell.classList.add("highlight", "barrier");   // SAME AS rollAll()
     });
 
-    // Update debug panel
+    document.getElementById("results").innerHTML = html;
+
     updateDebugPanel();
+    resetTimer();
+    startTimer();
 }
     function closePuzzleOverlay() {
     document.getElementById("puzzleOverlay").style.display = "none";
