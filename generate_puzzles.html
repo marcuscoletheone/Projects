@@ -6,7 +6,8 @@
 <body>
   <h1>Generating Unique Puzzle Signatures...</h1>
   <pre id="output"></pre>
-  <div><button onclick="showPuzzles()">Show Puzzle List</button></div>
+   <div> <button onclick="showPuzzles()">Show Puzzle List</button> </div>
+
 
 <script>
 const dice = [
@@ -20,7 +21,10 @@ const dice = [
 ];
 
 const signatures = new Set();
-
+function showPuzzles() {
+  const data = localStorage.getItem("allPuzzles");
+  document.body.innerHTML += "<pre>" + (data || "No puzzles found") + "</pre>";
+}
 function generateSignatures() {
   for (let a = 0; a < dice[0].faces.length; a++) {
     for (let b = 0; b < dice[1].faces.length; b++) {
@@ -61,13 +65,10 @@ function generateSignatures() {
 }
 
 generateSignatures();
-  <button onclick="showPuzzles()">Show Puzzle List</button>
 
 
-function showPuzzles() {
-  const data = localStorage.getItem("allPuzzles");
-  document.body.innerHTML += "<pre>" + (data || "No puzzles found") + "</pre>";
-}
+
+
 
 </script>
 </body>
