@@ -162,6 +162,11 @@
 
 <body>
   <h1>Square Puzzle</h1>
+  <button onclick="showPuzzleSelect()">Puzzle Selection</button>
+  <div id="puzzleSelect" style="display:none; margin-top:20px;">
+  <h2>Select a Puzzle</h2>
+  <div id="puzzleButtons"></div>
+</div>
   <div id="timerDisplay">0.0s</div>
   <button onclick="rollAll()">Start Game (Set random Barriers)🎲</button>
   
@@ -286,6 +291,30 @@ threeL: {
 let timer = 0;            // milliseconds
 let timerInterval = null; // setInterval handle
 let timerRunning = false; // prevents double-start
+    function showPuzzleSelect() {
+    const container = document.getElementById("puzzleButtons");
+    container.innerHTML = ""; // clear old buttons
+
+    for (let i = 1; i <= 25; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = `Puzzle ${i}`;
+        btn.style.margin = "8px";
+        btn.onclick = () => loadPuzzle(i);
+        container.appendChild(btn);
+    }
+
+    document.getElementById("puzzleSelect").style.display = "block";
+    document.getElementById("boardWrapper").style.display = "none";
+    document.getElementById("toolbox").style.display = "none";
+}
+    function loadPuzzle(num) {
+    document.getElementById("puzzleSelect").style.display = "none";
+    document.getElementById("boardWrapper").style.display = "block";
+    document.getElementById("toolbox").style.display = "block";
+
+    // Later: load fixed dice roll for puzzle num
+    rollAll();
+}
   function updateTimerDisplay() {
     const totalSeconds = Math.floor(timer / 1000);
 
