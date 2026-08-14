@@ -915,11 +915,26 @@ function updateDebugPanel() {
 
   document.getElementById("debugPanel").innerHTML = out;
 }
+function initGame() {
+    // Ensure puzzleProgress exists
+    if (!puzzleProgress) puzzleProgress = {};
+
+    // Ensure each puzzle has an entry
+    for (let i = 1; i <= allPuzzles.length; i++) {
+        if (!puzzleProgress[i]) {
+            puzzleProgress[i] = {
+                solved: false,
+                bestTime: null
+            };
+        }
+    }
+
+    // Now it's safe to open the menu
+    showPuzzleSelect();
+}
 
     buildBoard();
-window.addEventListener("load", () => {
-    showPuzzleSelect();
-});
+window.addEventListener("load", initGame);
   </script>
 </body>
 </html>
