@@ -223,13 +223,12 @@
     let gameOver = false;
     let puzzleProgress = JSON.parse(localStorage.getItem("puzzleProgress") || "{}");
     // Load the full shuffled puzzle list
-    const allPuzzles = JSON.parse(localStorage.getItem("allPuzzles"));
-
-
-// Safety check
-if (!allPuzzles || !Array.isArray(allPuzzles)) {
-    alert("Puzzle list not found. Please run the generator page first.");
+    const allPuzzles = JSON.parse(localStorage.getItem("allPuzzles") || "[]");
+    if (!allPuzzles.length) {
+    alert("Puzzle data missing. Please generate puzzles first.");
 }
+   
+
     const shapes = {
   one: {
     rotations: [[[0,0]]],
@@ -933,8 +932,25 @@ function initGame() {
     showPuzzleSelect();
 }
 
+    
+window.addEventListener("load", () => {
+
+    // Load puzzle list
+    const stored = localStorage.getItem("allPuzzles");
+    if (!stored) {
+        alert("Puzzle data missing. Please generate puzzles first.");
+        return;
+    }
+
+    // Parse puzzle list
+    allPuzzles = JSON.parse(stored);
+
+    // Build board once
     buildBoard();
-window.addEventListener("load", initGame);
+
+    // Initialize progress
+    initGame();
+});
   </script>
 </body>
 </html>
