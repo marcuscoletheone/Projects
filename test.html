@@ -97,23 +97,12 @@
       transition: background 0.2s, transform 0.2s;
     }
 .barrier {
-  background: linear-gradient(135deg, #9ea3a8, #7d8287);
-  border: 1px solid #6c6f72;
-  border-radius: 8px;
-
+  background: #555;                 /* solid dark gray */
+  border: 1px solid #444;           /* slightly darker border */
+  border-radius: 8px;               /* matches your cell rounding */
   box-shadow:
-    0 4px 10px rgba(0,0,0,0.30),      /* outer depth */
-    inset 0 1px 2px rgba(255,255,255,0.25), /* top shine */
-    inset 0 -2px 4px rgba(0,0,0,0.35);      /* bottom shadow */
-
-  background-image:
-    repeating-linear-gradient(
-      45deg,
-      rgba(255,255,255,0.06) 0px,
-      rgba(255,255,255,0.06) 2px,
-      rgba(0,0,0,0.05) 2px,
-      rgba(0,0,0,0.05) 4px
-    );
+    0 3px 6px rgba(0,0,0,0.25),     /* soft outer depth */
+    inset 0 0 4px rgba(0,0,0,0.3);  /* subtle inner shading */
 }
     
     .highlight {
