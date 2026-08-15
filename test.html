@@ -47,7 +47,7 @@
   font-weight: bold;
   font-size: 20px;
 }
-    #board {
+  #board {
   display: grid;
   grid-template-columns: repeat(6, 60px);
   grid-template-rows: repeat(6, 60px);
@@ -55,12 +55,12 @@
   margin: 25px auto;
   width: max-content;
 
+  animation: boardGlow 4s ease-in-out infinite;
+
   background: #ffffff;
   padding: 20px;
   border-radius: 15px;
-
-  /* REMOVE the static box-shadow here */
-  animation: boardGlow 4s ease-in-out infinite;
+  /* ❌ remove the static box-shadow here */
 }
 
 @keyframes boardGlow {
