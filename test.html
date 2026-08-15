@@ -223,11 +223,7 @@
     let gameOver = false;
     let puzzleProgress = JSON.parse(localStorage.getItem("puzzleProgress") || "{}");
     // Load the full shuffled puzzle list
-    const allPuzzles = JSON.parse(localStorage.getItem("allPuzzles") || "[]");
-    if (!allPuzzles.length) {
-    alert("Puzzle data missing. Please generate puzzles first.");
-}
-   
+      
 
     const shapes = {
   one: {
@@ -629,7 +625,6 @@ function buildToolboxLayout() {
     enablePieceInteraction(piece);
   });
 }
-buildToolboxLayout();
     
 function enablePieceInteraction(piece) {
   let startX, startY;
@@ -914,43 +909,38 @@ function updateDebugPanel() {
 
   document.getElementById("debugPanel").innerHTML = out;
 }
+let allPuzzles = [];
+
 function initGame() {
-    // Ensure puzzleProgress exists
-    if (!puzzleProgress) puzzleProgress = {};
+    fetch("puzzles.json")
+        .then(r => r.json())
+        .then(data => {
+            allPuzzles = data;
 
-    // Ensure each puzzle has an entry
-    for (let i = 1; i <= allPuzzles.length; i++) {
-        if (!puzzleProgress[i]) {
-            puzzleProgress[i] = {
-                solved: false,
-                bestTime: null
-            };
-        }
-    }
+            // Initialize puzzleProgress
+            if (!puzzleProgress) puzzleProgress = {};
 
-    // Now it's safe to open the menu
-    showPuzzleSelect();
+            for (let i = 1; i <= allPuzzles.length; i++) {
+                if (!puzzleProgress[i]) {
+                    puzzleProgress[i] = {
+                        solved: false,
+                        bestTime: null
+                    };
+                }
+            }
+
+            buildBoard();
+            showPuzzleSelect();
+        })
+        .catch(err => {
+            alert("Error loading puzzle data.");
+            console.error(err);
+        });
 }
 
-    
-window.addEventListener("load", () => {
+window.addEventListener("load", initGame);
+  
 
-    // Load puzzle list
-    const stored = localStorage.getItem("allPuzzles");
-    if (!stored) {
-        alert("Puzzle data missing. Please generate puzzles first.");
-        return;
-    }
-
-    // Parse puzzle list
-    allPuzzles = JSON.parse(stored);
-
-    // Build board once
-    buildBoard();
-
-    // Initialize progress
-    initGame();
-});
   </script>
 </body>
 </html>
