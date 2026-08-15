@@ -48,27 +48,37 @@
   font-size: 20px;
 }
     #board {
-      display: grid;
-      grid-template-columns: repeat(6, 60px);
-      grid-template-rows: repeat(6, 60px);
-      gap: 0px;
-      margin: 25px auto;
-      width: max-content;
-      animation: boardGlow 4s ease-in-out infinite;
-      /* 3D board effect */
-      background: #ffffff;
-      padding: 20px; 
-      border-radius: 15px;
-      box-shadow: 
-        0 4px 8px rgba(0,0,0,0.15),
-        inset 0 0 10px rgba(0,0,0,0.05);
-    }
+  display: grid;
+  grid-template-columns: repeat(6, 60px);
+  grid-template-rows: repeat(6, 60px);
+  gap: 0px;
+  margin: 25px auto;
+  width: max-content;
 
-   
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 15px;
+
+  /* REMOVE the static box-shadow here */
+  animation: boardGlow 4s ease-in-out infinite;
+}
+
 @keyframes boardGlow {
-  0%   { box-shadow: 0 4px 8px rgba(0,0,0,0.15), inset 0 0 10px rgba(0,0,0,0.05); }
-  50%  { box-shadow: 0 6px 14px rgba(0,0,0,0.25), inset 0 0 14px rgba(0,0,0,0.08); }
-  100% { box-shadow: 0 4px 8px rgba(0,0,0,0.15), inset 0 0 10px rgba(0,0,0,0.05); }
+  0% {
+    box-shadow:
+      0 4px 8px rgba(0,0,0,0.15),
+      inset 0 0 10px rgba(0,0,0,0.05);
+  }
+  50% {
+    box-shadow:
+      0 6px 14px rgba(0,0,0,0.25),
+      inset 0 0 14px rgba(0,0,0,0.08);
+  }
+  100% {
+    box-shadow:
+      0 4px 8px rgba(0,0,0,0.15),
+      inset 0 0 10px rgba(0,0,0,0.05);
+  }
 }
 
     .cell {
